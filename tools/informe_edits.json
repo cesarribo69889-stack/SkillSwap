@@ -1,0 +1,82 @@
+{
+  "ops": [
+    { "type": "insertAfter", "idx": 346, "lines": [
+      "Material Design 3: Google. (s.f.). Material Design 3 Guidelines. https://m3.material.io",
+      "Desarrollo Android nativo en Java: Google. (s.f.). Android Developers Documentation. https://developer.android.com",
+      "Priorización MoSCoW: Clegg, D., & Barker, R. (1994). Case Method Fast-Track: A RAD Approach. Addison-Wesley.",
+      "Diagrama de Ishikawa: Ishikawa, K. (1986). Guide to Quality Control. Asian Productivity Organization."
+    ]},
+
+    { "type": "insertAfter", "idx": 341, "lines": [
+      "Servicio de almacenamiento de archivos (Firebase Storage) para las fotografías de perfil y las evidencias de aprendizaje, restringido por tipo de archivo y con un tamaño máximo de 5 MB."
+    ]},
+
+    { "type": "insertAfter", "idx": 336, "lines": [
+      "Compatibilidad: la aplicación se ejecuta desde Android 7.0 (API 24) en adelante y se compila contra la API 37 del SDK de Android, lo que cubre prácticamente la totalidad de los dispositivos en uso por los estudiantes.",
+      "Mantenibilidad: arquitectura MVVM con patrón Repository, 50 pruebas unitarias automatizadas con JUnit 4 y análisis estático con Android Lint sin errores en la versión entregada.",
+      "Rendimiento: el cálculo de compatibilidad se ejecuta localmente en el dispositivo y es determinista, por lo que no añade latencia de red ni consumo adicional de cuota de lectura en Firestore."
+    ]},
+
+    { "type": "setText", "idx": 335, "text": "Usabilidad: interfaz construida con componentes Material Design 3, navegación inferior de cinco secciones y soporte de modo claro y oscuro." },
+
+    { "type": "insertAfter", "idx": 331, "lines": [
+      "Consultar el detalle de una coincidencia con la explicación de los criterios por los que el sistema la considera compatible.",
+      "Definir y aceptar un contrato de aprendizaje (objetivo, número de sesiones, duración por sesión, modalidad y actividad final) antes de iniciar el intercambio.",
+      "Registrar el avance del intercambio y marcarlo como completado con la confirmación de ambas partes.",
+      "Registrar la evidencia y la autoevaluación del aprendizaje al cerrar el intercambio.",
+      "Consultar el Pasaporte de Habilidades con el nivel alcanzado en cada habilidad enseñada o aprendida.",
+      "Consultar el saldo de SkillPoints, el nivel de gamificación alcanzado y las insignias desbloqueadas.",
+      "Crear Skill Challenges, postularse a ellos y gestionar las postulaciones recibidas."
+    ]},
+
+    { "type": "setText", "idx": 331, "text": "Recibir notificaciones push y consultar el centro de notificaciones dentro de la aplicación." },
+    { "type": "setText", "idx": 330, "text": "Calificar un intercambio finalizado en puntualidad, comunicación y calidad de enseñanza, y consultar el historial de reputación." },
+    { "type": "setText", "idx": 329, "text": "Comunicarse mediante el chat integrado, que se habilita automáticamente al aceptarse una solicitud." },
+    { "type": "setText", "idx": 328, "text": "Enviar, aceptar, rechazar o cancelar solicitudes de intercambio." },
+    { "type": "setText", "idx": 327, "text": "Visualizar las coincidencias generadas automáticamente con su porcentaje de compatibilidad, y filtrarlas por categoría, nivel, modalidad y compatibilidad mínima." },
+    { "type": "setText", "idx": 326, "text": "Crear y editar un perfil académico (universidad, carrera, ciclo, descripción, modalidad y disponibilidad horaria) con las habilidades que ofrece y las que busca aprender." },
+    { "type": "setText", "idx": 325, "text": "Registrarse e iniciar sesión con correo electrónico y contraseña, y recuperar la contraseña olvidada." },
+
+    { "type": "setText", "idx": 322, "text": "Procesamiento de datos del producto: Cloud Firestore como base de datos NoSQL en tiempo real para almacenar perfiles, habilidades, coincidencias, solicitudes, intercambios, mensajes de chat, calificaciones, contratos de aprendizaje, pasaporte, SkillPoints y retos; Firebase Storage para las imágenes de perfil y las evidencias de aprendizaje; y Firebase Cloud Messaging para el envío de notificaciones push ante nuevas coincidencias, solicitudes y mensajes." },
+
+    { "type": "tableFill", "table": 4, "rows": 12, "cells": [
+      ["Herramienta", "Uso", "Justificación"],
+      ["Android Studio (AGP 9.3.3 / Gradle 9.5)", "IDE, compilación y depuración", "Entorno oficial de Android; integra emulador, depurador, analizador de APK y Android Lint en una sola herramienta."],
+      ["Java 11", "Lenguaje de programación", "Lenguaje soportado de forma nativa por el SDK de Android y ya conocido por el equipo desde cursos previos, lo que reduce la curva de aprendizaje y el riesgo del proyecto."],
+      ["XML + Material Design 3 + ViewBinding", "Capa de interfaz", "61 layouts XML con componentes Material 3 y soporte de modo claro y oscuro; ViewBinding elimina findViewById y detecta errores de vista en tiempo de compilación."],
+      ["MVVM (ViewModel + LiveData) + patrón Repository", "Arquitectura de la aplicación", "Patrón recomendado por Google: separa la vista del acceso a datos, conserva el estado ante rotaciones del dispositivo y concentra la lógica de Firestore en una clase por dominio."],
+      ["Firebase Authentication, Cloud Firestore, Storage y Cloud Messaging", "Backend como servicio", "Evita levantar y mantener infraestructura de servidor propia: autenticación, base de datos NoSQL en tiempo real, almacenamiento de imágenes y notificaciones push integradas."],
+      ["Firestore Security Rules", "Seguridad del backend", "Restringe cada lectura y escritura al usuario autenticado que participa en el documento; en ningún caso se emplea acceso abierto."],
+      ["Glide + CircleImageView", "Carga y caché de imágenes", "Descarga, almacena en caché y recorta las fotografías de perfil alojadas en Firebase Storage, evitando descargas repetidas."],
+      ["JUnit 4", "Pruebas unitarias", "50 pruebas automatizadas que validan el motor de compatibilidad SkillMatch, la gamificación, el catálogo de habilidades y las validaciones de formulario."],
+      ["Android Lint", "Análisis estático de código", "Detecta problemas de rendimiento, accesibilidad y seguridad antes de generar la versión de entrega."],
+      ["Figma", "Diseño de interfaz (wireframes y mockups)", "Permite prototipar y validar la experiencia de usuario antes de programar."],
+      ["Git y GitHub", "Control de versiones", "Trabajo colaborativo, historial de cambios y respaldo del código fuente."]
+    ]},
+
+    { "type": "cell", "table": 3, "row": 3, "col": 2, "text": "Android 7.0 (API 24) o superior" },
+
+    { "type": "insertAfter", "idx": 268, "lines": [
+      "Decisión adoptada: se seleccionó Scrum. El equipo está conformado por cuatro integrantes y dispone de un único ciclo académico para construir y sustentar el producto, escenario en el que la carga documental y los roles especializados que exige RUP resultarían desproporcionados frente al valor entregado. Bajo Scrum el proyecto se organizó en cinco sprints de dos semanas sobre un Product Backlog de 48 historias de usuario priorizadas con la técnica MoSCoW, de modo que al cierre de cada sprint se dispuso de un incremento funcional instalable y verificable. El Product Backlog completo, con su priorización y asignación por sprint, se adjunta como entregable independiente."
+    ]},
+
+    { "type": "setText", "idx": 188, "text": "Aplicativo Android nativo desarrollado con arquitectura MVVM y patrón Repository, empleando Java 11 y layouts XML con componentes Material Design 3 para la interfaz, y Firebase (Authentication, Cloud Firestore, Storage y Cloud Messaging) como backend. Permite crear perfiles, generar coincidencias mediante un motor de compatibilidad ponderado, gestionar solicitudes, conversar por chat, calificar los intercambios y registrar el avance en un pasaporte de habilidades." },
+    { "type": "setText", "idx": 186, "text": "Propuesta 01: Aplicativo móvil nativo (Android – Java 11 + XML + Material Design 3 + Firebase)" },
+    { "type": "setText", "idx": 184, "text": "A partir de las causas identificadas en el diagrama de Ishikawa se formularon tres propuestas de solución. A continuación se describe cada una con sus ventajas y desventajas; la Propuesta 01 fue la seleccionada e implementada." },
+
+    { "type": "delete", "idx": 147 },
+    { "type": "setText", "idx": 146, "text": "Antecedentes" },
+
+    { "type": "setText", "idx": 141, "text": "El desarrollo se realizó bajo arquitectura MVVM (ViewModel + LiveData) con patrón Repository, empleando Java 11 y layouts XML con Material Design 3 en el cliente Android, y Firebase (Authentication, Cloud Firestore, Storage y Cloud Messaging) como backend. La versión entregada está compuesta por 120 clases Java, 61 layouts XML y 50 pruebas unitarias automatizadas; se ejecuta desde Android 7.0 (API 24) en adelante y compila contra la API 37 del SDK de Android." },
+
+    { "type": "insertAfter", "idx": 140, "lines": [
+      "Definir y aceptar un contrato de aprendizaje antes de iniciar el intercambio, con objetivo, número de sesiones, duración y actividad final.",
+      "Acumular SkillPoints e insignias y construir un Pasaporte de Habilidades a partir de los intercambios completados.",
+      "Participar en Skill Challenges, retos colaborativos que requieren varias habilidades complementarias.",
+      "Registrar la evidencia y la autoevaluación del aprendizaje al cerrar cada intercambio."
+    ]},
+
+    { "type": "setText", "idx": 136, "text": "Generar coincidencias automáticas mediante un motor de compatibilidad que pondera habilidades complementarias, nivel de dominio, modalidad, disponibilidad horaria y reputación sobre una escala de 0 a 100." },
+    { "type": "setText", "idx": 134, "text": "El aplicativo permite:" }
+  ]
+}

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <style name="Base.Theme.SkillSwap" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_primary</item>
+        <item name="colorOnPrimary">@color/text_on_primary</item>
+        <item name="colorPrimaryContainer">@color/brand_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/brand_primary_dark</item>
+
+        <item name="colorSecondary">@color/brand_secondary</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorSecondaryContainer">@color/brand_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/brand_secondary_dark</item>
+
+        <item name="colorTertiary">@color/brand_accent</item>
+        <item name="colorOnTertiary">@color/white</item>
+
+        <item name="android:colorBackground">@color/bg_app</item>
+        <item name="colorSurface">@color/bg_surface</item>
+        <item name="colorSurfaceVariant">@color/bg_surface_variant</item>
+        <item name="colorOnSurface">@color/text_primary</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary</item>
+        <item name="colorOutline">@color/divider</item>
+
+        <item name="colorError">@color/state_rejected</item>
+
+        <item name="android:statusBarColor">@color/bg_app</item>
+        <item name="android:navigationBarColor">@color/bg_app</item>
+        <item name="android:windowLightStatusBar">true</item>
+
+        <item name="materialCardViewStyle">@style/Widget.SkillSwap.Card</item>
+        <item name="materialButtonStyle">@style/Widget.SkillSwap.Button</item>
+        <item name="textInputStyle">@style/Widget.SkillSwap.TextInput</item>
+        <item name="bottomNavigationStyle">@style/Widget.SkillSwap.BottomNav</item>
+        <item name="chipStyle">@style/Widget.SkillSwap.Chip</item>
+        <item name="toolbarStyle">@style/Widget.SkillSwap.Toolbar</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <style name="Theme.SkillSwap" parent="Base.Theme.SkillSwap" />
+
+    <!-- Splash: fondo degradado a pantalla completa -->
+    <style name="Theme.SkillSwap.Splash" parent="Theme.SkillSwap">
+        <item name="android:windowBackground">@drawable/bg_gradient_brand</item>
+        <item name="android:statusBarColor">@color/brand_primary_dark</item>
+        <item name="android:navigationBarColor">@color/brand_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <!-- Pantallas de autenticación con fondo degradado -->
+    <style name="Theme.SkillSwap.Auth" parent="Theme.SkillSwap">
+        <item name="android:statusBarColor">@color/brand_primary</item>
+        <item name="android:windowLightStatusBar">false</item>
+    </style>
+
+    <style name="Theme.SkillSwap.Transparent" parent="Theme.SkillSwap">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.SkillSwap.BottomSheet" parent="Theme.Material3.DayNight.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.SkillSwap.BottomSheet</item>
+    </style>
+</resources>

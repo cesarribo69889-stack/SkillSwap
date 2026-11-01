@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="cycles">
+        <item>Ciclo I</item>
+        <item>Ciclo II</item>
+        <item>Ciclo III</item>
+        <item>Ciclo IV</item>
+        <item>Ciclo V</item>
+        <item>Ciclo VI</item>
+        <item>Ciclo VII</item>
+        <item>Ciclo VIII</item>
+        <item>Ciclo IX</item>
+        <item>Ciclo X</item>
+        <item>Egresado</item>
+    </string-array>
+
+    <string-array name="modalities">
+        <item>Presencial</item>
+        <item>Virtual</item>
+        <item>Ambas</item>
+    </string-array>
+
+    <string-array name="levels">
+        <item>Básico</item>
+        <item>Intermedio</item>
+        <item>Avanzado</item>
+    </string-array>
+
+    <string-array name="availability_slots">
+        <item>Lunes a Viernes - Mañana</item>
+        <item>Lunes a Viernes - Tarde</item>
+        <item>Lunes a Viernes - Noche</item>
+        <item>Sábados - Mañana</item>
+        <item>Sábados - Tarde</item>
+        <item>Domingos - Mañana</item>
+        <item>Domingos - Tarde</item>
+    </string-array>
+</resources>

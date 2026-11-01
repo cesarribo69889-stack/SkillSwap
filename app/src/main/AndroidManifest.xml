@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <application
+        android:name=".SkillSwapApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.SkillSwap"
+        tools:targetApi="31">
+
+        <!-- ============ AUTH ============ -->
+        <activity
+            android:name=".view.auth.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SkillSwap.Splash">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".view.auth.OnboardingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SkillSwap.Auth" />
+
+        <activity
+            android:name=".view.auth.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SkillSwap.Auth"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".view.auth.RegisterActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SkillSwap.Auth"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".view.auth.ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SkillSwap.Auth"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ============ PRINCIPAL ============ -->
+        <activity
+            android:name=".view.MainActivity"
+            android:exported="false"
+            android:launchMode="singleTop" />
+
+        <!-- ============ PERFIL ============ -->
+        <activity android:name=".view.profile.EditProfileActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".view.profile.UserProfileActivity" android:exported="false" />
+
+        <!-- ============ HABILIDADES ============ -->
+        <activity android:name=".view.skills.MySkillsActivity" android:exported="false" />
+        <activity android:name=".view.skills.SkillCatalogActivity" android:exported="false" />
+
+        <!-- ============ MATCHES ============ -->
+        <activity android:name=".view.matches.MatchDetailActivity" android:exported="false" />
+
+        <!-- ============ INTERCAMBIOS ============ -->
+        <activity android:name=".view.exchange.SendRequestActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".view.exchange.RequestsActivity" android:exported="false" />
+        <activity android:name=".view.exchange.ExchangeDetailActivity" android:exported="false" />
+
+        <!-- ============ CHAT ============ -->
+        <activity
+            android:name=".view.chat.ChatActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ============ CALIFICACIONES ============ -->
+        <activity android:name=".view.ratings.RateExchangeActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity android:name=".view.ratings.HistoryActivity" android:exported="false" />
+
+        <!-- ============ NOTIFICACIONES ============ -->
+        <activity android:name=".view.notifications.NotificationsActivity" android:exported="false" />
+
+        <!-- ============ PASAPORTE ============ -->
+        <activity android:name=".view.passport.PassportActivity" android:exported="false" />
+
+        <!-- ============ CONTRATOS ============ -->
+        <activity android:name=".view.contracts.ContractActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ============ RETOS ============ -->
+        <activity android:name=".view.challenges.ChallengesActivity" android:exported="false" />
+        <activity android:name=".view.challenges.ChallengeDetailActivity" android:exported="false" />
+        <activity android:name=".view.challenges.CreateChallengeActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ============ GAMIFICACION / EVIDENCIA ============ -->
+        <activity android:name=".view.passport.SkillPointsActivity" android:exported="false" />
+        <activity android:name=".view.exchange.EvidenceActivity" android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- ============ FIREBASE CLOUD MESSAGING ============ -->
+        <service
+            android:name=".notifications.SkillSwapMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_logo" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/brand_primary" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="skillswap_general" />
+    </application>
+</manifest>

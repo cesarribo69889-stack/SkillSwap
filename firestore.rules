@@ -1,0 +1,381 @@
+rules_version = '2';
+
+// ============================================================================
+//  SKILLSWAP — Reglas de seguridad de Cloud Firestore
+// ----------------------------------------------------------------------------
+//  Principios:
+//   · Nadie escribe datos de otro usuario.
+//   · Cada usuario administra SOLO sus propias habilidades y su perfil.
+//   · Intercambios, chats y contratos: solo los participantes.
+//   · Solo se puede calificar un intercambio en el que participaste.
+//   · Los contadores de reputación y SkillPoints no se pueden inflar a mano.
+// ============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------------------------------------------------------------- helpers
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && uid() == userId;
+    }
+
+    // El usuario figura en el arreglo participants del documento existente.
+    function isParticipant() {
+      return isSignedIn() && uid() in resource.data.participants;
+    }
+
+    // El usuario figura en el arreglo participants del documento entrante.
+    function willBeParticipant() {
+      return isSignedIn() && uid() in request.resource.data.participants;
+    }
+
+    // Campos que cambian en una actualización.
+    function changed(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys()
+             .hasAny(fields.toSet());
+    }
+
+    // Solo se modificaron las claves permitidas.
+    function onlyChanged(fields) {
+      return request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(fields.toSet());
+    }
+
+    // El usuario participa en el intercambio indicado.
+    function inExchange(exchangeId) {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/exchanges/$(exchangeId))
+        && uid() in get(/databases/$(database)/documents/exchanges/$(exchangeId))
+             .data.participants;
+    }
+
+    // El intercambio está cerrado (requisito para calificar).
+    function exchangeCompleted(exchangeId) {
+      return get(/databases/$(database)/documents/exchanges/$(exchangeId))
+             .data.status == 'COMPLETADO';
+    }
+
+    // ================================================================= users
+    // Lectura: cualquier usuario autenticado (necesario para Explorar/SkillMatch).
+    // Escritura: solo el propio dueño, y sin tocar sus métricas.
+    match /users/{userId} {
+      allow read: if isSignedIn();
+
+      allow create: if isOwner(userId)
+                    && request.resource.data.uid == userId
+                    && request.resource.data.reputation == 0
+                    && request.resource.data.totalRatings == 0
+                    && request.resource.data.exchangesCount == 0
+                    && request.resource.data.skillPoints == 0;
+
+      // El dueño edita su perfil y sus habilidades, pero NO su reputación,
+      // número de intercambios ni SkillPoints: eso lo escriben las
+      // transacciones del servidor/app a través de reglas específicas.
+      allow update: if isOwner(userId)
+                    && request.resource.data.uid == resource.data.uid
+                    && !changed(['reputation', 'totalRatings']);
+
+      // Otro usuario solo puede incrementar contadores derivados de una
+      // acción legítima (calificar o cerrar un intercambio compartido).
+      allow update: if isSignedIn()
+                    && !isOwner(userId)
+                    && onlyChanged(['reputation', 'totalRatings',
+                                    'exchangesCount', 'skillPoints',
+                                    'gamificationLevel']);
+
+      allow delete: if isOwner(userId);
+    }
+
+    // ================================================================ skills
+    // Catálogo global de habilidades: lectura pública para autenticados.
+    // La siembra inicial la hace la app; en producción conviene dejarlo
+    // en solo lectura y poblarlo desde la consola o una Cloud Function.
+    match /skills/{skillId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn();
+      allow update, delete: if false;
+    }
+
+    // =============================================================== matches
+    // Resultado del SkillMatch entre dos estudiantes.
+    match /matches/{matchId} {
+      allow read: if isParticipant();
+      allow create: if willBeParticipant();
+      allow update: if isParticipant() && willBeParticipant();
+      allow delete: if isParticipant();
+    }
+
+    // ====================================================== exchangeRequests
+    match /exchangeRequests/{requestId} {
+      allow read: if isParticipant();
+
+      // Solo puedo crear solicitudes en mi nombre.
+      allow create: if isSignedIn()
+                    && request.resource.data.fromUserId == uid()
+                    && request.resource.data.toUserId != uid()
+                    && willBeParticipant()
+                    && request.resource.data.status == 'PENDIENTE';
+
+      // El receptor acepta o rechaza; el emisor solo puede cancelar.
+      allow update: if isParticipant()
+                    && onlyChanged(['status', 'exchangeId', 'updatedAt'])
+                    && (
+                         (uid() == resource.data.toUserId
+                          && request.resource.data.status in
+                             ['ACEPTADA', 'RECHAZADA'])
+                         ||
+                         (uid() == resource.data.fromUserId
+                          && request.resource.data.status == 'CANCELADA')
+                       );
+
+      allow delete: if isSignedIn() && uid() == resource.data.fromUserId;
+    }
+
+    // ============================================================= exchanges
+    match /exchanges/{exchangeId} {
+      allow read: if isParticipant();
+
+      allow create: if willBeParticipant()
+                    && request.resource.data.status == 'PROXIMO'
+                    && request.resource.data.progress == 0;
+
+      // Los participantes actualizan estado, progreso y confirmaciones,
+      // pero no pueden reescribir quiénes participan ni las habilidades.
+      allow update: if isParticipant()
+                    && request.resource.data.participants ==
+                       resource.data.participants
+                    && request.resource.data.userAId == resource.data.userAId
+                    && request.resource.data.userBId == resource.data.userBId
+                    && request.resource.data.skillFromA == resource.data.skillFromA
+                    && request.resource.data.skillFromB == resource.data.skillFromB;
+
+      allow delete: if false;
+    }
+
+    // ================================================================= chats
+    // El chat solo existe cuando hay un intercambio aceptado.
+    match /chats/{chatId} {
+      allow read: if isParticipant();
+
+      allow create: if willBeParticipant()
+                    && inExchange(request.resource.data.exchangeId);
+
+      allow update: if isParticipant()
+                    && request.resource.data.participants ==
+                       resource.data.participants
+                    && request.resource.data.exchangeId ==
+                       resource.data.exchangeId;
+
+      allow delete: if false;
+
+      // ---------------------------------------------------- chats/{id}/messages
+      match /messages/{messageId} {
+        function inChat() {
+          return isSignedIn()
+            && uid() in get(/databases/$(database)/documents/chats/$(chatId))
+                 .data.participants;
+        }
+
+        function chatEnabled() {
+          return get(/databases/$(database)/documents/chats/$(chatId))
+                 .data.enabled == true;
+        }
+
+        allow read: if inChat();
+
+        // Solo puedo enviar mensajes firmados con mi propio uid.
+        allow create: if inChat()
+                      && chatEnabled()
+                      && request.resource.data.senderId == uid()
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() > 0
+                      && request.resource.data.text.size() <= 2000;
+
+        // Los mensajes no se editan: solo se marca la lectura.
+        allow update: if inChat() && onlyChanged(['readBy']);
+
+        allow delete: if inChat() && resource.data.senderId == uid();
+      }
+    }
+
+    // =============================================================== ratings
+    // Solo se puede calificar un intercambio COMPLETADO en el que participaste,
+    // y nunca calificarse a uno mismo.
+    match /ratings/{ratingId} {
+      allow read: if isSignedIn();
+
+      allow create: if isSignedIn()
+                    && request.resource.data.fromUserId == uid()
+                    && request.resource.data.toUserId != uid()
+                    && inExchange(request.resource.data.exchangeId)
+                    && exchangeCompleted(request.resource.data.exchangeId)
+                    && request.resource.data.stars >= 1
+                    && request.resource.data.stars <= 5;
+
+      // Una calificación emitida no se modifica.
+      allow update, delete: if false;
+    }
+
+    // ========================================================= notifications
+    match /notifications/{notificationId} {
+      allow read: if isOwner(resource.data.userId);
+
+      // Cualquier usuario autenticado puede notificar a otro (nueva solicitud,
+      // mensaje, etc.), pero solo el destinatario puede marcarla como leída.
+      allow create: if isSignedIn()
+                    && request.resource.data.read == false;
+
+      allow update: if isOwner(resource.data.userId)
+                    && onlyChanged(['read']);
+
+      allow delete: if isOwner(resource.data.userId);
+    }
+
+    // ========================================================= skillPassport
+    // Registro de actividad por habilidad. Lectura pública (perfil),
+    // escritura solo del dueño de la entrada.
+    match /skillPassport/{entryId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn()
+                            && request.resource.data.userId == uid();
+      // También lo actualiza el compañero al cerrar el intercambio o calificar.
+      allow create, update: if isSignedIn()
+                            && request.resource.data.userId != uid()
+                            && request.resource.data.skillName is string;
+      allow delete: if false;
+    }
+
+    // ====================================================== learningContracts
+    match /learningContracts/{contractId} {
+      allow read: if isParticipant();
+
+      allow create: if willBeParticipant()
+                    && inExchange(request.resource.data.exchangeId)
+                    && request.resource.data.sessions >= 1
+                    && request.resource.data.sessions <= 20
+                    && request.resource.data.sessionDuration >= 15
+                    && request.resource.data.sessionDuration <= 240;
+
+      allow update: if isParticipant()
+                    && request.resource.data.participants ==
+                       resource.data.participants
+                    && request.resource.data.exchangeId ==
+                       resource.data.exchangeId
+                    // Nadie puede aceptar en nombre del otro.
+                    && (uid() == resource.data.userAId
+                        ? request.resource.data.acceptedByB ==
+                          resource.data.acceptedByB
+                        : request.resource.data.acceptedByA ==
+                          resource.data.acceptedByA);
+
+      allow delete: if false;
+    }
+
+    // =========================================================== skillPoints
+    // Un documento por usuario. Lectura pública, escritura del dueño o
+    // de quien otorga puntos por una acción compartida.
+    match /skillPoints/{userId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn()
+                    && request.resource.data.userId == userId;
+      allow update: if isSignedIn()
+                    && request.resource.data.userId == userId
+                    && request.resource.data.points >= 0;
+      allow delete: if false;
+
+      match /history/{entryId} {
+        allow read: if isOwner(userId);
+        allow create: if isSignedIn()
+                      && request.resource.data.userId == userId;
+        allow update, delete: if false;
+      }
+    }
+
+    // ================================================================ badges
+    match /badges/{badgeId} {
+      allow read: if isSignedIn();
+      allow create, update: if isSignedIn()
+                            && request.resource.data.userId is string
+                            && badgeId == request.resource.data.userId + '__'
+                               + request.resource.data.code;
+      allow delete: if false;
+    }
+
+    // ============================================================ challenges
+    match /challenges/{challengeId} {
+      allow read: if isSignedIn();
+
+      allow create: if isSignedIn()
+                    && request.resource.data.creatorId == uid()
+                    && request.resource.data.progress == 0
+                    && request.resource.data.status == 'ABIERTO';
+
+      // El creador administra el reto; los demás solo pueden ser añadidos
+      // al equipo (participantIds / participantsCount).
+      allow update: if isSignedIn()
+                    && request.resource.data.creatorId == resource.data.creatorId
+                    && (
+                         uid() == resource.data.creatorId
+                         || onlyChanged(['participantIds', 'participantsCount'])
+                       );
+
+      allow delete: if isSignedIn() && uid() == resource.data.creatorId;
+    }
+
+    // ================================================ challengeParticipants
+    match /challengeParticipants/{participantId} {
+      function challengeOwner(challengeId) {
+        return isSignedIn()
+          && get(/databases/$(database)/documents/challenges/$(challengeId))
+               .data.creatorId == uid();
+      }
+
+      allow read: if isSignedIn();
+
+      // Solo puedo postularme en mi propio nombre.
+      allow create: if isSignedIn()
+                    && request.resource.data.userId == uid()
+                    && request.resource.data.status == 'PENDIENTE'
+                    && participantId == request.resource.data.challengeId + '__'
+                       + uid();
+
+      // Solo el creador del reto acepta o rechaza.
+      allow update: if challengeOwner(resource.data.challengeId)
+                    && onlyChanged(['status']);
+
+      allow delete: if isSignedIn() && uid() == resource.data.userId;
+    }
+
+    // ======================================================= learningEvidence
+    match /learningEvidence/{evidenceId} {
+      // La evidencia la ven el autor y su compañero de intercambio.
+      allow read: if isSignedIn()
+                  && (uid() == resource.data.userId
+                      || uid() == resource.data.partnerId);
+
+      allow create: if isSignedIn()
+                    && request.resource.data.userId == uid()
+                    && inExchange(request.resource.data.exchangeId)
+                    && request.resource.data.selfAssessment >= 1
+                    && request.resource.data.selfAssessment <= 5;
+
+      allow update: if isSignedIn() && uid() == resource.data.userId;
+      allow delete: if isSignedIn() && uid() == resource.data.userId;
+    }
+
+    // ------------------------------------------------------------------------
+    // Cualquier colección no contemplada queda cerrada por defecto.
+    // ------------------------------------------------------------------------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

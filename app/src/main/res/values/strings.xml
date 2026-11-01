@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SkillSwap</string>
+    <string name="app_tagline">Intercambia habilidades, no dinero</string>
+
+    <!-- Generales -->
+    <string name="loading">Cargando…</string>
+    <string name="retry">Reintentar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="accept">Aceptar</string>
+    <string name="save">Guardar</string>
+    <string name="delete">Eliminar</string>
+    <string name="edit">Editar</string>
+    <string name="close">Cerrar</string>
+    <string name="search">Buscar</string>
+    <string name="filters">Filtros</string>
+    <string name="apply">Aplicar</string>
+    <string name="clear">Limpiar</string>
+    <string name="back">Volver</string>
+    <string name="continue_label">Continuar</string>
+    <string name="skip">Omitir</string>
+    <string name="start">Empezar</string>
+    <string name="send">Enviar</string>
+    <string name="empty_generic">Nada por aquí todavía</string>
+
+    <!-- Onboarding -->
+    <string name="ob1_title">Aprende sin pagar</string>
+    <string name="ob1_desc">Miles de estudiantes tienen el conocimiento que buscas. Intercambia lo que sabes por lo que quieres aprender.</string>
+    <string name="ob2_title">SkillMatch inteligente</string>
+    <string name="ob2_desc">Calculamos tu compatibilidad real con cada estudiante: habilidades, nivel, horarios, modalidad y reputación.</string>
+    <string name="ob3_title">Crece y demuéstralo</string>
+    <string name="ob3_desc">Gana SkillPoints, insignias y construye tu Pasaporte de Habilidades con cada intercambio completado.</string>
+
+    <!-- Auth -->
+    <string name="login_title">Hola de nuevo 👋</string>
+    <string name="login_subtitle">Inicia sesión y sigue intercambiando</string>
+    <string name="register_title">Crea tu cuenta</string>
+    <string name="register_subtitle">Únete a la comunidad SkillSwap</string>
+    <string name="hint_names">Nombres</string>
+    <string name="hint_lastnames">Apellidos</string>
+    <string name="hint_email">Correo electrónico</string>
+    <string name="hint_password">Contraseña</string>
+    <string name="hint_confirm_password">Confirmar contraseña</string>
+    <string name="action_login">Iniciar sesión</string>
+    <string name="action_register">Registrarme</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="no_account">¿No tienes cuenta? <b>Regístrate</b></string>
+    <string name="have_account">¿Ya tienes cuenta? <b>Inicia sesión</b></string>
+    <string name="recover_title">Recuperar contraseña</string>
+    <string name="recover_subtitle">Te enviaremos un enlace para restablecerla</string>
+    <string name="action_recover">Enviar enlace</string>
+    <string name="logout">Cerrar sesión</string>
+
+    <!-- Validaciones -->
+    <string name="err_required">Este campo es obligatorio</string>
+    <string name="err_email">Correo electrónico no válido</string>
+    <string name="err_password_short">Mínimo 6 caracteres</string>
+    <string name="err_password_weak">Debe incluir letras y números</string>
+    <string name="err_password_match">Las contraseñas no coinciden</string>
+    <string name="err_name">Sólo letras, mínimo 2 caracteres</string>
+
+    <!-- Navegación -->
+    <string name="nav_home">Inicio</string>
+    <string name="nav_explore">Explorar</string>
+    <string name="nav_exchanges">Intercambios</string>
+    <string name="nav_chats">Chats</string>
+    <string name="nav_profile">Perfil</string>
+
+    <!-- Home -->
+    <string name="home_greeting">Hola, %1$s 👋</string>
+    <string name="home_question">¿Qué quieres aprender hoy?</string>
+    <string name="home_popular">Habilidades populares</string>
+    <string name="home_matches">Matches para ti</string>
+    <string name="home_active">Intercambios activos</string>
+    <string name="home_challenges">Retos disponibles</string>
+    <string name="see_all">Ver todo</string>
+
+    <!-- Perfil -->
+    <string name="profile_teaches">Enseña</string>
+    <string name="profile_learns">Quiere aprender</string>
+    <string name="profile_edit">Editar perfil</string>
+    <string name="hint_university">Universidad</string>
+    <string name="hint_career">Carrera</string>
+    <string name="hint_cycle">Ciclo</string>
+    <string name="hint_description">Descripción</string>
+    <string name="hint_availability">Disponibilidad</string>
+    <string name="modality">Modalidad</string>
+    <string name="modality_presencial">Presencial</string>
+    <string name="modality_virtual">Virtual</string>
+    <string name="modality_both">Ambas</string>
+
+    <!-- Habilidades -->
+    <string name="my_skills">Mis habilidades</string>
+    <string name="add_skill">Agregar habilidad</string>
+    <string name="skill_level">Nivel</string>
+    <string name="level_basic">Básico</string>
+    <string name="level_intermediate">Intermedio</string>
+    <string name="level_advanced">Avanzado</string>
+
+    <!-- Explorar -->
+    <string name="explore_title">Explorar estudiantes</string>
+    <string name="view_profile">Ver perfil</string>
+    <string name="do_exchange">Intercambiar</string>
+    <string name="compatibility">%1$d %% compatible</string>
+
+    <!-- Solicitudes -->
+    <string name="requests_received">Recibidas</string>
+    <string name="requests_sent">Enviadas</string>
+    <string name="send_request">Enviar solicitud</string>
+    <string name="reject">Rechazar</string>
+
+    <!-- Intercambios -->
+    <string name="my_exchanges">Mis intercambios</string>
+    <string name="tab_upcoming">Próximos</string>
+    <string name="tab_in_progress">En proceso</string>
+    <string name="tab_completed">Completados</string>
+    <string name="mark_completed">Marcar como completado</string>
+
+    <!-- Ratings -->
+    <string name="rate_exchange">Calificar intercambio</string>
+    <string name="rate_punctuality">Puntualidad</string>
+    <string name="rate_communication">Comunicación</string>
+    <string name="rate_teaching">Calidad de enseñanza</string>
+    <string name="rate_comment">Comentario</string>
+    <string name="history">Historial</string>
+
+    <!-- Notificaciones -->
+    <string name="notifications">Notificaciones</string>
+
+    <!-- Pasaporte -->
+    <string name="passport">Pasaporte de habilidades</string>
+    <string name="passport_disclaimer">Este pasaporte refleja tu actividad dentro de SkillSwap. No constituye una certificación académica ni un título oficial.</string>
+
+    <!-- Contratos -->
+    <string name="learning_contract">Contrato de aprendizaje</string>
+
+    <!-- Gamificación -->
+    <string name="skillpoints">SkillPoints</string>
+    <string name="skillpoints_disclaimer">Los SkillPoints son puntos de reconocimiento dentro de la app. No son dinero ni tienen valor monetario.</string>
+
+    <!-- Retos -->
+    <string name="challenges">Skill Challenges</string>
+
+    <!-- Evidencia -->
+    <string name="learning_evidence">Validación de aprendizaje</string>
+    <string name="evidence_disclaimer">El registro de actividad es una autoevaluación entre pares. No equivale a una certificación académica.</string>
+
+    <!-- Notificaciones sistema -->
+    <string name="channel_general_name">General</string>
+    <string name="channel_general_desc">Solicitudes, matches e intercambios</string>
+    <string name="channel_chat_name">Mensajes</string>
+    <string name="channel_chat_desc">Nuevos mensajes de tus intercambios</string>
+
+    <!-- ====== Extraídos de los layouts ====== -->
+    <string name="lbl_about_me">Sobre mí</string>
+    <string name="lbl_manage">Gestionar</string>
+    <string name="lbl_reputation">Reputación</string>
+    <string name="lbl_exchanges">Intercambios</string>
+    <string name="lbl_requests">Solicitudes</string>
+    <string name="lbl_chat">Chat</string>
+    <string name="lbl_view_detail">Ver detalle</string>
+    <string name="lbl_save">Guardar</string>
+    <string name="lbl_description">Descripción</string>
+    <string name="lbl_objective">Objetivo</string>
+    <string name="lbl_progress">Progreso</string>
+    <string name="lbl_details">Detalles</string>
+    <string name="lbl_category">Categoría</string>
+    <string name="lbl_skill">Habilidad</string>
+    <string name="lbl_all_f">Todas</string>
+    <string name="lbl_message">Mensaje</string>
+    <string name="lbl_participants">Participantes</string>
+    <string name="lbl_days">Días</string>
+    <string name="lbl_sessions">Sesiones</string>
+    <string name="lbl_minutes_per_session">Minutos por sesión</string>
+    <string name="lbl_badges">Insignias</string>
+    <string name="lbl_levels">Niveles</string>
+    <string name="lbl_recent_activity">Movimientos recientes</string>
+    <string name="lbl_min_compatibility">Compatibilidad mínima</string>
+    <string name="lbl_you_teach">Tú enseñas</string>
+    <string name="lbl_you_learn">Tú aprendes</string>
+    <string name="lbl_taught_past">Enseñaste</string>
+    <string name="lbl_learned_past">Aprendiste</string>
+    <string name="lbl_taught_plural">Enseñadas</string>
+    <string name="lbl_learned_plural">Aprendidas</string>
+    <string name="lbl_offers">Ofrece</string>
+    <string name="lbl_wants_to_learn">Quiere aprender</string>
+    <string name="lbl_i_want_to_learn">Quiero aprender</string>
+    <string name="lbl_i_can_teach">Puedo enseñar</string>
+    <string name="lbl_i_teach">Enseño</string>
+    <string name="lbl_skill_taught">Habilidad enseñada</string>
+    <string name="lbl_skill_learned">Habilidad aprendida</string>
+    <string name="lbl_the_exchange">El intercambio</string>
+    <string name="lbl_needed">Se necesita</string>
+    <string name="lbl_required_skills">Habilidades requeridas</string>
+    <string name="lbl_skillpoints_total">SkillPoints acumulados</string>
+    <string name="lbl_my_registered_skills">Mis habilidades registradas</string>
+    <string name="lbl_ratings_received">Calificaciones recibidas</string>
+    <string name="lbl_how_calculated">Cómo se calcula</string>
+    <string name="lbl_why_compatible">¿Por qué son compatibles?</string>
+    <string name="lbl_how_was_it">¿Cómo fue la experiencia?</string>
+    <string name="lbl_agreement_acceptance">Aceptación del acuerdo</string>
+    <string name="lbl_accept_agreement">Aceptar acuerdo</string>
+    <string name="lbl_challenge_progress">Avance del reto</string>
+    <string name="lbl_self_assessment">Autoevaluación</string>
+    <string name="lbl_activity_done">Actividad realizada</string>
+    <string name="lbl_final_activity">Actividad final</string>
+    <string name="lbl_objective_exchange">Objetivo del intercambio</string>
+    <string name="lbl_concrete_goal">Meta concreta</string>
+    <string name="lbl_proposed_schedule">Horario propuesto</string>
+    <string name="lbl_challenge_title">Título del reto</string>
+    <string name="lbl_create_challenge">Crear reto</string>
+    <string name="lbl_publish_challenge">Publicar reto</string>
+    <string name="lbl_join_challenge">Quiero participar</string>
+    <string name="lbl_send_rating">Enviar calificación</string>
+    <string name="lbl_register_activity">Registrar actividad</string>
+    <string name="lbl_register_session">Registrar sesión realizada</string>
+    <string name="lbl_attach_evidence">Adjuntar evidencia (opcional)</string>
+    <string name="lbl_note_optional">Nota (opcional)</string>
+    <string name="lbl_notes_optional">Notas (opcional)</string>
+    <string name="lbl_mark_all_read">Marcar todas como leídas</string>
+    <string name="lbl_objective_met">Se cumplió el objetivo del contrato</string>
+
+    <!-- Textos de ayuda -->
+    <string name="hint_search_home">Busca una habilidad o estudiante</string>
+    <string name="hint_write_message">Escribe un mensaje…</string>
+    <string name="help_chat_enabled">El chat se habilita con cada intercambio aceptado</string>
+    <string name="help_availability">Elige los bloques en los que puedes coordinar sesiones</string>
+    <string name="help_skills_they_teach">Habilidades que este estudiante enseña</string>
+    <string name="help_choose_offer">Elige lo que ofrecerás a cambio</string>
+    <string name="help_team_skills">Selecciona los perfiles que necesitas en el equipo</string>
+    <string name="help_contract_intro">Definan juntos el objetivo antes de iniciar</string>
+    <string name="help_evidence_intro">Registra qué practicaste y qué lograste.</string>
+    <string name="help_evidence_row">Registra la actividad que realizaste</string>
+    <string name="help_challenges_intro">Únete a un equipo, aporta tu habilidad y construyan algo juntos.</string>
+
+    <!-- Estados vacíos -->
+    <string name="empty_no_matches">Agrega habilidades a tu perfil para descubrir estudiantes compatibles.</string>
+    <string name="empty_no_exchanges">Todavía no tienes intercambios activos.</string>
+    <string name="empty_no_ratings">Todavía no tiene calificaciones.</string>
+    <string name="empty_no_passport">Tu pasaporte se llenará cuando completes intercambios.</string>
+    <string name="empty_first_message">Escribe el primer mensaje y coordinen su intercambio.</string>
+
+    <!-- Valores por defecto de formularios -->
+    <string name="default_sessions">3</string>
+    <string name="default_duration">60</string>
+    <string name="default_participants">4</string>
+    <string name="default_days">7</string>
+
+    <!-- ====== Textos usados desde código ====== -->
+    <string name="st_already_joined">Ya participas</string>
+    <string name="st_already_joined_long">Ya participas en este reto</string>
+    <string name="st_you_are_organizer">Eres el organizador</string>
+    <string name="st_team_full">Equipo completo</string>
+    <string name="st_applications_closed">Postulaciones cerradas</string>
+    <string name="st_they_offer">Te ofrece</string>
+    <string name="st_you_offer">Le ofreces</string>
+    <string name="st_they_want">Quiere aprender</string>
+    <string name="st_you_want">Quieres aprender</string>
+    <string name="st_waiting_confirmation">Esperando confirmación</string>
+    <string name="st_contract_none">Aún no definido · toca para crearlo</string>
+    <string name="st_contract_waiting_partner">Esperando la aceptación de tu compañero</string>
+    <string name="st_contract_waiting_you">Pendiente de tu aceptación</string>
+    <string name="st_no_complementary_skills">Sin habilidades complementarias</string>
+    <string name="st_already_rated">Ya calificaste este intercambio</string>
+
+    <!-- Estados vacíos (título) -->
+    <string name="empty_title_challenges">Aún no hay retos</string>
+    <string name="empty_title_chats">Sin conversaciones</string>
+    <string name="empty_title_exchanges">Nada por aquí</string>
+    <string name="empty_title_explore">Sin coincidencias</string>
+    <string name="empty_title_notifications">Todo tranquilo</string>
+    <string name="empty_title_history">Historial vacío</string>
+
+    <!-- Formatos con datos -->
+    <string name="fmt_percent">%1$d %%</string>
+    <string name="fmt_percent_completed">%1$d %% completado</string>
+    <string name="fmt_progress_advance">Avance: %1$d %%</string>
+    <string name="fmt_session_of">Sesión %1$d de %2$d</string>
+    <string name="fmt_modality">Modalidad: %1$s</string>
+    <string name="fmt_start_date">Inicio: %1$s</string>
+    <string name="fmt_taught_you">Te enseñó %1$s</string>
+    <string name="fmt_contributes">Aporta %1$s</string>
+    <string name="fmt_teaches">Enseña %1$s</string>
+    <string name="fmt_searches">Busca %1$s</string>
+    <string name="fmt_points_level">%1$d SkillPoints · %2$s</string>
+    <string name="fmt_role_category">%1$s · %2$s</string>
+    <string name="fmt_you_said">Tú: %1$s</string>
+    <string name="fmt_points_delta">%1$s%2$d</string>
+    <string name="fmt_min_compatibility">%1$d %% o más</string>
+
+    <!-- ====== Descripciones de estados vacíos ====== -->
+    <string name="empty_desc_explore">Agrega más habilidades a tu perfil o ajusta los filtros para encontrar estudiantes compatibles.</string>
+    <string name="empty_desc_challenges">Crea el primero: define un objetivo, las habilidades que necesitas y arma tu equipo.</string>
+    <string name="empty_desc_chats">El chat se habilita automáticamente cuando alguien acepta una solicitud de intercambio.</string>
+    <string name="empty_desc_history">Aquí aparecerán los intercambios que completes, con lo que enseñaste y lo que aprendiste.</string>
+    <string name="empty_desc_notifications">Aquí verás solicitudes, mensajes, matches e insignias.</string>
+    <string name="empty_desc_exchanges_done">Cuando termines un intercambio aparecerá en esta lista.</string>
+    <string name="empty_desc_exchanges_pending">Envía una solicitud desde Explorar para crear tu primer intercambio.</string>
+
+    <!-- ====== Valores por defecto mostrados ====== -->
+    <string name="st_schedule_pending">Horario por coordinar</string>
+    <string name="st_modality_pending">por definir</string>
+    <string name="st_availability_pending">Disponibilidad por definir</string>
+    <string name="st_no_description">Este estudiante aún no escribió su descripción.</string>
+    <string name="st_sessions_pending">Aún no acordaron la cantidad de sesiones</string>
+    <string name="st_level_beginner">Principiante</string>
+    <string name="st_skillmatch">SkillMatch</string>
+    <string name="st_accepted_suffix">%1$s · aceptó</string>
+    <string name="st_pending_suffix">%1$s · pendiente</string>
+    <string name="fmt_challenge_objective">Aprender %1$s y enseñar %2$s</string>
+    <string name="fmt_match_formula">El porcentaje se calcula con reglas reales sobre 100 puntos:\n\n• %1$d pts — coincidencia de habilidades en ambos sentidos\n• %2$d pts — nivel de quien enseña\n• %3$d pts — modalidad compatible\n• %4$d pts — horarios en común\n• %5$d pts — reputación del estudiante\n\nSi no hay habilidades complementarias el resultado es 0 %%.</string>
+
+    <!-- ====== Plurales (evitan "1 intercambios" / "1 sesiones") ====== -->
+    <plurals name="plu_exchanges">
+        <item quantity="one">%1$d intercambio</item>
+        <item quantity="other">%1$d intercambios</item>
+    </plurals>
+
+    <plurals name="plu_compatible_students">
+        <item quantity="one">%1$d estudiante compatible</item>
+        <item quantity="other">%1$d estudiantes compatibles</item>
+    </plurals>
+
+    <plurals name="plu_contract_active">
+        <item quantity="one">Acuerdo activo · %1$d sesión de %2$d min</item>
+        <item quantity="other">Acuerdo activo · %1$d sesiones de %2$d min</item>
+    </plurals>
+
+    <plurals name="plu_participants_of">
+        <item quantity="one">%1$d de %2$d participante</item>
+        <item quantity="other">%1$d de %2$d participantes</item>
+    </plurals>
+
+    <plurals name="plu_deadline_participants">
+        <item quantity="one">%1$s · %2$d/%3$d participante</item>
+        <item quantity="other">%1$s · %2$d/%3$d participantes</item>
+    </plurals>
+</resources>

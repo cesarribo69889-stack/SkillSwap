@@ -1,0 +1,36 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+# ---- SkillSwap ----
+# Artefactos de compilacion
+/app/build
+.kotlin/
+
+# El IDE
+/.idea/
+
+# Capturas de pantalla para el informe (pesan ~5 MB, se regeneran con tools/shot.sh)
+# Quita esta linea si quieres versionarlas.
+/capturas/
+
+# Nunca subir credenciales en texto plano
+*_Usuarios.txt
+**/claves*.txt
+
+# Configuracion de Firebase: lleva la clave de API y el id del proyecto.
+# Cada quien descarga la suya desde la consola de Firebase.
+# Ver app/google-services.json.example
+/app/google-services.json

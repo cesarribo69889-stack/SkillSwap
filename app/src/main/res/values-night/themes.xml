@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="Base.Theme.SkillSwap" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/brand_primary_light</item>
+        <item name="colorOnPrimary">#1B1033</item>
+        <item name="colorPrimaryContainer">#37276B</item>
+        <item name="colorOnPrimaryContainer">#E9E3FF</item>
+
+        <item name="colorSecondary">@color/brand_secondary</item>
+        <item name="colorOnSecondary">#00281F</item>
+        <item name="colorSecondaryContainer">#0A4D45</item>
+        <item name="colorOnSecondaryContainer">@color/brand_secondary_container</item>
+
+        <item name="colorTertiary">@color/brand_accent</item>
+        <item name="colorOnTertiary">#3B0B0B</item>
+
+        <item name="android:colorBackground">@color/bg_app_night</item>
+        <item name="colorSurface">@color/bg_surface_night</item>
+        <item name="colorSurfaceVariant">@color/bg_surface_variant_night</item>
+        <item name="colorOnSurface">@color/text_primary_night</item>
+        <item name="colorOnSurfaceVariant">@color/text_secondary_night</item>
+        <item name="colorOutline">@color/divider_night</item>
+
+        <item name="android:statusBarColor">@color/bg_app_night</item>
+        <item name="android:navigationBarColor">@color/bg_app_night</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <item name="materialCardViewStyle">@style/Widget.SkillSwap.Card</item>
+        <item name="materialButtonStyle">@style/Widget.SkillSwap.Button</item>
+        <item name="textInputStyle">@style/Widget.SkillSwap.TextInput</item>
+        <item name="bottomNavigationStyle">@style/Widget.SkillSwap.BottomNav</item>
+        <item name="chipStyle">@style/Widget.SkillSwap.Chip</item>
+        <item name="toolbarStyle">@style/Widget.SkillSwap.Toolbar</item>
+    </style>
+</resources>

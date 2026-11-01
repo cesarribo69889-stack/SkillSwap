@@ -1,0 +1,54 @@
+rules_version = '2';
+
+// ============================================================================
+//  SKILLSWAP — Reglas de seguridad de Firebase Storage
+// ----------------------------------------------------------------------------
+//  · avatars/{uid}.jpg          → solo el dueño escribe, todos los
+//                                 autenticados leen (se muestra en Explorar).
+//  · evidence/{uid}/{file}      → solo el dueño escribe y lee su evidencia.
+//  Límite de 5 MB y solo imágenes en ambos casos.
+// ============================================================================
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isImage() {
+      return request.resource.contentType.matches('image/.*');
+    }
+
+    function underSizeLimit() {
+      return request.resource.size < 5 * 1024 * 1024;
+    }
+
+    // ------------------------------------------------- Fotos de perfil
+    match /avatars/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+                   && isImage()
+                   && underSizeLimit()
+                   && fileName.matches(request.auth.uid + '\\.(jpg|jpeg|png|webp)');
+      allow delete: if isSignedIn()
+                    && fileName.matches(request.auth.uid + '\\..*');
+    }
+
+    // ------------------------------- Evidencia de validación de aprendizaje
+    match /evidence/{userId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isOwner(userId) && isImage() && underSizeLimit();
+      allow delete: if isOwner(userId);
+    }
+
+    // Todo lo demás queda cerrado.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

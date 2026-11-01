@@ -1,0 +1,25 @@
+{
+  "_comentario": [
+    "PLANTILLA. Este archivo NO es valido tal cual.",
+    "Descarga el tuyo real desde la consola de Firebase:",
+    "  Configuracion del proyecto > Tus apps > Android > google-services.json",
+    "y guardalo como app/google-services.json (esta ignorado por git).",
+    "El paquete de la app debe ser com.skillswap"
+  ],
+  "project_info": {
+    "project_number": "TU_PROJECT_NUMBER",
+    "project_id": "TU_PROJECT_ID",
+    "storage_bucket": "TU_PROJECT_ID.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "TU_APP_ID",
+        "android_client_info": { "package_name": "com.skillswap" }
+      },
+      "api_key": [ { "current_key": "TU_API_KEY" } ],
+      "services": { "appinvite_service": { "other_platform_oauth_client": [] } }
+    }
+  ],
+  "configuration_version": "1"
+}
