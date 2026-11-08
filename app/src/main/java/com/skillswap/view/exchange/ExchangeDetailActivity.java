@@ -87,6 +87,14 @@ public class ExchangeDetailActivity extends BaseActivity {
             viewModel.updateProgress(exchange, exchange.getSessionsDone() + 1);
         });
 
+        // INNOVACION 11: cronometra la sesion contra lo firmado en el contrato.
+        binding.btnLiveSession.setOnClickListener(v -> {
+            if (exchange == null) return;
+            Intent intent = new Intent(this, LiveSessionActivity.class);
+            intent.putExtra(Constants.EXTRA_EXCHANGE_ID, exchange.getId());
+            startActivity(intent);
+        });
+
         binding.btnPrimary.setOnClickListener(v -> onPrimaryAction());
     }
 

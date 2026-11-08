@@ -253,6 +253,34 @@
                         android:textAppearance="@style/TextAppearance.SkillSwap.Body"
                         app:drawableStartCompat="@drawable/ic_clock" />
 
+                    <!-- INNOVACION 7: franjas en las que ambos coinciden -->
+                    <TextView
+                        android:id="@+id/txtScheduleMatch"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:drawablePadding="8dp"
+                        android:textAppearance="@style/TextAppearance.SkillSwap.Body"
+                        android:textColor="?attr/colorPrimary"
+                        app:drawableStartCompat="@drawable/ic_calendar" />
+
+                    <!-- INNOVACION 8: indice de confiabilidad -->
+                    <TextView
+                        android:id="@+id/txtReliability"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:drawablePadding="8dp"
+                        android:textAppearance="@style/TextAppearance.SkillSwap.Body"
+                        app:drawableStartCompat="@drawable/ic_check_circle" />
+
+                    <TextView
+                        android:id="@+id/txtReliabilityDetail"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="28dp"
+                        android:textAppearance="@style/TextAppearance.SkillSwap.Caption" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

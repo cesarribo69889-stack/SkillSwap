@@ -10,6 +10,7 @@ public class PrefsManager {
     private static final String KEY_ONBOARDING = "onboarding_done";
     private static final String KEY_NAME = "cached_name";
     private static final String KEY_PHOTO = "cached_photo";
+    private static final String KEY_INTRO_SOUND = "intro_sound";
 
     private static PrefsManager instance;
     private final SharedPreferences prefs;
@@ -31,6 +32,15 @@ public class PrefsManager {
         prefs.edit().putBoolean(KEY_ONBOARDING, done).apply();
     }
 
+    /** Sonido de bienvenida al abrir la app. Activado por defecto. */
+    public boolean isIntroSoundEnabled() {
+        return prefs.getBoolean(KEY_INTRO_SOUND, true);
+    }
+
+    public void setIntroSoundEnabled(boolean enabled) {
+        prefs.edit().putBoolean(KEY_INTRO_SOUND, enabled).apply();
+    }
+
     public String getCachedName() {
         return prefs.getString(KEY_NAME, "");
     }
@@ -48,7 +58,13 @@ public class PrefsManager {
     }
 
     public void clear() {
+        // Las preferencias del dispositivo sobreviven al cierre de sesion:
+        // no son datos de la cuenta.
         boolean onboarding = isOnboardingDone();
-        prefs.edit().clear().putBoolean(KEY_ONBOARDING, onboarding).apply();
+        boolean sonido = isIntroSoundEnabled();
+        prefs.edit().clear()
+                .putBoolean(KEY_ONBOARDING, onboarding)
+                .putBoolean(KEY_INTRO_SOUND, sonido)
+                .apply();
     }
 }

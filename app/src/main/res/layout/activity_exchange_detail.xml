@@ -246,6 +246,16 @@
                         android:layout_marginTop="10dp"
                         android:text="@string/lbl_register_session"
                         app:icon="@drawable/ic_check" />
+
+                    <!-- INNOVACION 11: cronometrar la sesion acordada -->
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLiveSession"
+                        style="@style/Widget.SkillSwap.Button.Small"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:text="@string/live_session"
+                        app:icon="@drawable/ic_clock" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 

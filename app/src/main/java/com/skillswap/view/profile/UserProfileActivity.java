@@ -24,6 +24,8 @@ import com.skillswap.repository.UserRepository;
 import com.skillswap.utils.ChipFactory;
 import com.skillswap.utils.Constants;
 import com.skillswap.utils.ImageLoader;
+import com.skillswap.utils.ReliabilityEngine;
+import com.skillswap.utils.ScheduleMatcher;
 import com.skillswap.utils.SkillMatchEngine;
 import com.skillswap.utils.UiUtils;
 import com.skillswap.view.BaseActivity;
@@ -142,6 +144,49 @@ public class UserProfileActivity extends BaseActivity {
         binding.btnRequest.setEnabled(match.getScore() > 0);
         if (match.getScore() == 0) {
             binding.btnRequest.setText(R.string.st_no_complementary_skills);
+        }
+
+        renderScheduleAndReliability(me, user);
+    }
+
+    /**
+     * INNOVACION 7 - horarios en comun.
+     * INNOVACION 8 - indice de confiabilidad.
+     *
+     * Las dos responden a lo que uno se pregunta antes de enviar la
+     * solicitud: "¿podremos vernos?" y "¿se puede contar con esta persona?".
+     */
+    private void renderScheduleAndReliability(User me, User user) {
+        // 7. Franjas compartidas
+        List<ScheduleMatcher.Franja> franjas = ScheduleMatcher.coincidencias(
+                me == null ? null : me.getAvailability(), user.getAvailability());
+
+        if (franjas.isEmpty()) {
+            binding.txtScheduleMatch.setText(R.string.schedule_none);
+        } else {
+            StringBuilder sb = new StringBuilder();
+            int n = Math.min(3, franjas.size());
+            for (int i = 0; i < n; i++) {
+                if (i > 0) sb.append(" · ");
+                sb.append(franjas.get(i).etiqueta(60));
+            }
+            if (franjas.size() > n) {
+                sb.append(getString(R.string.fmt_schedule_more, franjas.size() - n));
+            }
+            binding.txtScheduleMatch.setText(
+                    getString(R.string.fmt_schedule_match, sb.toString()));
+        }
+
+        // 8. Confiabilidad
+        ReliabilityEngine.Resultado fiabilidad = ReliabilityEngine.calcularRapido(user);
+        if (!fiabilidad.tieneSuficientesDatos()) {
+            binding.txtReliability.setText(R.string.reliability_no_data);
+            binding.txtReliabilityDetail.setText("");
+        } else {
+            binding.txtReliability.setText(getString(R.string.fmt_reliability,
+                    fiabilidad.getEtiqueta(), fiabilidad.getPuntaje()));
+            binding.txtReliabilityDetail.setText(
+                    android.text.TextUtils.join(" · ", fiabilidad.getMotivos()));
         }
     }
 }

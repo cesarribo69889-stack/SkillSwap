@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.skillswap.databinding.ActivitySplashBinding;
 import com.skillswap.firebase.FirebaseManager;
 import com.skillswap.repository.UserRepository;
+import com.skillswap.utils.SoundPlayer;
 import com.skillswap.view.MainActivity;
 
 /** Pantalla de bienvenida: decide a donde ir segun la sesion. */
@@ -25,6 +26,10 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         binding = ActivitySplashBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        // Sonido de bienvenida. No suena si el telefono esta en silencio
+        // ni si el usuario lo desactivo desde su perfil.
+        SoundPlayer.playIntro(this);
 
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
             @Override

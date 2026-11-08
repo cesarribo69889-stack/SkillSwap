@@ -101,6 +101,12 @@
         <activity android:name=".view.contracts.ContractActivity" android:exported="false"
             android:windowSoftInputMode="adjustResize" />
 
+        <!-- ============ INNOVACIONES 9 a 12 ============ -->
+        <activity android:name=".view.exchange.LiveSessionActivity" android:exported="false" />
+        <activity android:name=".view.paths.LearningPathActivity" android:exported="false" />
+        <activity android:name=".view.leaderboard.LeaderboardActivity" android:exported="false" />
+        <activity android:name=".view.digest.WeeklyDigestActivity" android:exported="false" />
+
         <!-- ============ RETOS ============ -->
         <activity android:name=".view.challenges.ChallengesActivity" android:exported="false" />
         <activity android:name=".view.challenges.ChallengeDetailActivity" android:exported="false" />

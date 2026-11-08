@@ -19,8 +19,13 @@ import com.skillswap.databinding.ItemProfileRowBinding;
 import com.skillswap.model.User;
 import com.skillswap.utils.ChipFactory;
 import com.skillswap.utils.ImageLoader;
+import com.skillswap.utils.PrefsManager;
+import com.skillswap.utils.SoundPlayer;
 import com.skillswap.view.auth.OnboardingActivity;
 import com.skillswap.view.challenges.ChallengesActivity;
+import com.skillswap.view.digest.WeeklyDigestActivity;
+import com.skillswap.view.leaderboard.LeaderboardActivity;
+import com.skillswap.view.paths.LearningPathActivity;
 import com.skillswap.view.exchange.RequestsActivity;
 import com.skillswap.view.notifications.NotificationsActivity;
 import com.skillswap.view.passport.PassportActivity;
@@ -61,6 +66,13 @@ public class ProfileFragment extends Fragment {
                 startActivity(new Intent(requireContext(), MySkillsActivity.class)));
         binding.btnLogout.setOnClickListener(v -> confirmLogout());
 
+        PrefsManager prefs = PrefsManager.get(requireContext());
+        binding.switchIntroSound.setChecked(prefs.isIntroSoundEnabled());
+        binding.switchIntroSound.setOnCheckedChangeListener((button, checked) -> {
+            prefs.setIntroSoundEnabled(checked);
+            if (checked) SoundPlayer.playIntro(requireContext());
+        });
+
         viewModel.currentUser().observe(getViewLifecycleOwner(), new Observer<User>() {
             @Override
             public void onChanged(User user) {
@@ -83,6 +95,14 @@ public class ProfileFragment extends Fragment {
                 "Recibidas y enviadas", RequestsActivity.class);
         row(binding.rowNotifications, R.drawable.ic_notifications, getString(R.string.notifications),
                 "Centro de notificaciones", NotificationsActivity.class);
+
+        // Innovaciones 9, 10 y 12
+        row(binding.rowPaths, R.drawable.ic_target, getString(R.string.learning_paths),
+                "Qué aprender antes de qué", LearningPathActivity.class);
+        row(binding.rowLeaderboard, R.drawable.ic_trophy, getString(R.string.leaderboard),
+                "Cómo vas frente a tus compañeros", LeaderboardActivity.class);
+        row(binding.rowDigest, R.drawable.ic_calendar, getString(R.string.weekly_digest),
+                "Tus últimos 7 días", WeeklyDigestActivity.class);
     }
 
     private void row(ItemProfileRowBinding rowBinding, int icon, String title, String subtitle,

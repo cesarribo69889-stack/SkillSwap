@@ -93,6 +93,34 @@ notificación para calificar.
 
 ## 4. Innovaciones
 
+La app incorpora **12 innovaciones**. Las seis primeras formaban el alcance
+original; las seis siguientes se añadieron después y comparten un principio:
+**no inventan datos ni usan azar**, todas calculan a partir de información
+que el estudiante ya generó usando la app.
+
+| # | Innovación | Dónde vive la lógica | Pantalla |
+|---:|---|---|---|
+| 1 | SkillMatch con porcentaje real | `utils/SkillMatchEngine` | Explorar · Perfil público |
+| 2 | Pasaporte de Habilidades | colección `skillPassport` | `PassportActivity` |
+| 3 | Contrato de Aprendizaje | `repository/ContractRepository` | `ContractActivity` |
+| 4 | SkillPoints y niveles | `utils/GamificationEngine` | `SkillPointsActivity` |
+| 5 | Skill Challenges | `repository/ChallengeRepository` | `ChallengesActivity` |
+| 6 | Validación del Aprendizaje | `repository/EvidenceRepository` | `EvidenceActivity` |
+| 7 | Coincidencia de horarios | `utils/ScheduleMatcher` | Perfil público |
+| 8 | Índice de confiabilidad | `utils/ReliabilityEngine` | Perfil público |
+| 9 | Rutas de aprendizaje | `utils/LearningPathEngine` | `LearningPathActivity` |
+| 10 | Tabla de líderes | `utils/LeaderboardEngine` | `LeaderboardActivity` |
+| 11 | Modo sesión en vivo | `view/exchange/LiveSessionActivity` | `LiveSessionActivity` |
+| 12 | Resumen semanal | `utils/WeeklyDigestEngine` | `WeeklyDigestActivity` |
+
+Las innovaciones 7, 8, 9, 10 y 12 son **lógica pura sin Android ni Firebase**,
+por lo que están cubiertas por pruebas unitarias en
+`app/src/test/java/com/skillswap/InnovacionesTest.java` (30 pruebas).
+
+Ninguna de las seis nuevas necesitó colecciones nuevas en Firestore: todas
+leen de `users`, `skillPassport`, `skillPoints` y `exchanges`, así que las
+reglas de seguridad no cambiaron.
+
 ### 4.1 SkillMatch inteligente — `utils/SkillMatchEngine.java`
 
 El porcentaje **no es aleatorio**: es un modelo ponderado sobre 100 puntos.
@@ -183,6 +211,59 @@ objetivo, evidencia opcional (imagen en Storage) y autoevaluación 1–5.
 > **No equivale a una certificación académica.**
 
 ---
+
+### 4.7 Coincidencia de horarios — `utils/ScheduleMatcher.java`
+
+Cruza los bloques de disponibilidad de ambos estudiantes y propone franjas
+concretas (`"Martes 19:00 - 20:00"`) en vez de dejar que lo negocien por chat.
+Expande etiquetas como *"Lunes a Viernes - Noche"* a los cinco días, compara
+sin tildes ni mayúsculas y ordena de lunes a domingo.
+
+### 4.8 Índice de confiabilidad — `utils/ReliabilityEngine.java`
+
+La reputación dice si enseñas bien; esto dice si se puede **contar** contigo.
+Son cosas distintas: alguien puede explicar de maravilla y aun así abandonar
+intercambios a medias.
+
+| Peso | Criterio |
+|---:|---|
+| **45** | Intercambios completados frente a abandonados |
+| **25** | Puntualidad media recibida (sin datos → se da la mitad) |
+| **15** | Contratos de aprendizaje firmados |
+| **15** | Experiencia acumulada (satura a los 10 intercambios) |
+
+Por debajo de un intercambio cerrado devuelve «Sin historial» en vez de
+inventar un número. *No es una nota académica ni un historial crediticio.*
+
+### 4.9 Rutas de aprendizaje — `utils/LearningPathEngine.java`
+
+Una habilidad rara vez se aprende sola: «Android» sin «Java» delante es
+perder el tiempo. Define 5 rutas con prerrequisitos ordenados y marca el
+avance usando lo que el estudiante ya tiene en su Pasaporte, sin pedirle
+que rellene nada. *Una ruta es una sugerencia de estudio, no un plan
+curricular.*
+
+### 4.10 Tabla de líderes — `utils/LeaderboardEngine.java`
+
+Ranking por SkillPoints acotable a **todos / mi universidad / mi carrera**,
+que es donde la comparación motiva. Los empates comparten posición, se
+excluye a quien tiene 0 puntos y **siempre** se calcula la posición propia,
+aunque quede fuera del corte, para que nadie vea una tabla sin sí mismo.
+
+### 4.11 Modo sesión en vivo — `view/exchange/LiveSessionActivity.java`
+
+Antes el avance se marcaba «a ojo». Esta pantalla cronometra la sesión real
+contra la duración que ambos firmaron en el contrato y **solo deja
+registrarla al superar el 50 % del tiempo acordado**. Sin contrato aceptado
+el cronómetro no arranca: es el contrato el que da sentido a la medida.
+
+### 4.12 Resumen semanal — `utils/WeeklyDigestEngine.java`
+
+Los puntos sueltos no dicen gran cosa; «ganaste 23 puntos, 8 más que la
+semana pasada» sí. Compara los últimos 7 días con los 7 anteriores, reparte
+los puntos por día en un gráfico de barras dibujado a mano
+(`view/digest/BarChartView`, sin librerías externas) y cierra con una
+sugerencia concreta según lo que faltó.
 
 ## 5. Modelo de datos (Cloud Firestore)
 

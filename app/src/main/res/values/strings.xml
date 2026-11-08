@@ -204,6 +204,7 @@
     <string name="lbl_self_assessment">Autoevaluación</string>
     <string name="lbl_activity_done">Actividad realizada</string>
     <string name="lbl_final_activity">Actividad final</string>
+    <string name="lbl_intro_sound">Sonido al abrir la app</string>
     <string name="lbl_objective_exchange">Objetivo del intercambio</string>
     <string name="lbl_concrete_goal">Meta concreta</string>
     <string name="lbl_proposed_schedule">Horario propuesto</string>
@@ -335,4 +336,63 @@
         <item quantity="one">%1$s · %2$d/%3$d participante</item>
         <item quantity="other">%1$s · %2$d/%3$d participantes</item>
     </plurals>
+
+    <!-- ============ INNOVACION 11: modo sesion en vivo ============ -->
+    <string name="live_session">Sesión en vivo</string>
+    <string name="live_session_start">Iniciar</string>
+    <string name="live_session_pause">Pausar</string>
+    <string name="live_session_resume">Reanudar</string>
+    <string name="live_session_reset">Reiniciar</string>
+    <string name="live_session_register">Registrar sesión</string>
+    <string name="live_session_hint">Cronometra la sesión que acordaron en el contrato</string>
+    <string name="live_session_can_register">Ya puedes registrar esta sesión</string>
+    <string name="live_session_agreed">Lo que acordaron</string>
+    <string name="live_session_no_contract">Definan el contrato para poder cronometrar la sesión</string>
+    <string name="live_session_no_contract_timer">--:--</string>
+    <string name="live_session_done_title">Tiempo cumplido</string>
+    <string name="live_session_done_body">Completaron la sesión acordada. Registra el avance para que cuente en el intercambio.</string>
+    <string name="live_session_saved_title">Sesión registrada</string>
+    <string name="live_session_saved_body">El avance del intercambio ya se actualizó.</string>
+    <string name="lbl_register">Registrar</string>
+    <string name="fmt_session_with">Sesión con %1$s</string>
+    <string name="fmt_session_skill">%1$s · sesión %2$d de %3$d</string>
+    <string name="fmt_session_need_more">Necesitas al menos el %1$d%% del tiempo acordado</string>
+    <string name="fmt_session_confirm">Se registrará una sesión de %1$d minutos. ¿Continuar?</string>
+
+    <!-- ============ INNOVACION 9: ruta de aprendizaje ============ -->
+    <string name="learning_paths">Rutas de aprendizaje</string>
+    <string name="learning_paths_subtitle">Qué conviene aprender antes de qué</string>
+    <string name="learning_paths_disclaimer">Las rutas son una sugerencia de estudio, no un plan curricular ni una equivalencia académica.</string>
+    <string name="learning_path_next">Siguiente paso</string>
+    <string name="learning_path_done">Ruta completada</string>
+    <string name="fmt_path_progress">%1$d de %2$d pasos</string>
+
+    <!-- ============ INNOVACION 10: tabla de lideres ============ -->
+    <string name="leaderboard">Tabla de líderes</string>
+    <string name="leaderboard_scope_all">Todos</string>
+    <string name="leaderboard_scope_university">Mi universidad</string>
+    <string name="leaderboard_scope_career">Mi carrera</string>
+    <string name="leaderboard_empty">Todavía nadie tiene SkillPoints en este ámbito</string>
+    <string name="leaderboard_disclaimer">Los SkillPoints son reconocimiento dentro de la app. Esta tabla no refleja rendimiento académico.</string>
+    <string name="fmt_leaderboard_scope">%1$s · %2$d participantes</string>
+
+    <!-- ============ INNOVACION 12: resumen semanal ============ -->
+    <string name="weekly_digest">Resumen semanal</string>
+    <string name="weekly_digest_subtitle">Tus últimos 7 días en SkillSwap</string>
+    <string name="weekly_points">SkillPoints</string>
+    <string name="weekly_sessions">Sesiones</string>
+    <string name="weekly_closed">Cerrados</string>
+    <string name="weekly_active_days">Días activos</string>
+    <string name="weekly_chart_title">Puntos por día</string>
+    <string name="weekly_advice">Sugerencia</string>
+
+    <!-- ============ INNOVACIONES 7 y 8: horarios y confiabilidad ============ -->
+    <string name="schedule_match">Horarios en común</string>
+    <string name="reliability_index">Índice de confiabilidad</string>
+    <string name="reliability_explain">Mide si se puede contar contigo: intercambios terminados, puntualidad y contratos firmados. No es una nota académica.</string>
+    <string name="schedule_none">Sin horarios en común</string>
+    <string name="reliability_no_data">Sin historial todavía</string>
+    <string name="fmt_schedule_match">Coinciden: %1$s</string>
+    <string name="fmt_schedule_more">" y %1$d más"</string>
+    <string name="fmt_reliability">%1$s · %2$d/100 de confiabilidad</string>
 </resources>

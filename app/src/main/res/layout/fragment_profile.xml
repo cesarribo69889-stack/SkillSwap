@@ -330,7 +330,30 @@
             <include android:id="@+id/rowHistory" layout="@layout/item_profile_row" />
             <include android:id="@+id/rowRequests" layout="@layout/item_profile_row" />
             <include android:id="@+id/rowNotifications" layout="@layout/item_profile_row" />
+            <include android:id="@+id/rowPaths" layout="@layout/item_profile_row" />
+            <include android:id="@+id/rowLeaderboard" layout="@layout/item_profile_row" />
+            <include android:id="@+id/rowDigest" layout="@layout/item_profile_row" />
         </LinearLayout>
+
+        <!-- Preferencias del dispositivo (no viajan con la cuenta) -->
+        <com.google.android.material.card.MaterialCardView
+            style="@style/Widget.SkillSwap.Card"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="12dp">
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchIntroSound"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:minHeight="60dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:text="@string/lbl_intro_sound"
+                android:textAppearance="@style/TextAppearance.SkillSwap.Body" />
+        </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnLogout"
