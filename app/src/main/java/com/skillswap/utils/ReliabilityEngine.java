@@ -110,16 +110,23 @@ public final class ReliabilityEngine {
         Resultado r = new Resultado(total, true);
 
         // Motivos legibles, en orden de importancia.
+        // El singular y el plural se arman aqui porque este motor es Java puro:
+        // no puede usar los <plurals> de Android sin arrastrar un Context.
         if (abandonados == 0 && completados > 0) {
-            r.motivos.add("Completó los " + completados + " intercambios que empezó");
+            r.motivos.add(completados == 1
+                    ? "Completó el único intercambio que empezó"
+                    : "Completó los " + completados + " intercambios que empezó");
         } else {
             r.motivos.add(completados + " de " + totalCerrados + " intercambios completados");
         }
         if (puntualidadMedia > 0) {
-            r.motivos.add(String.format("Puntualidad %.1f de 5", puntualidadMedia));
+            r.motivos.add(String.format(java.util.Locale.getDefault(),
+                    "Puntualidad %.1f de 5", puntualidadMedia));
         }
         if (contratosFirmados > 0) {
-            r.motivos.add(contratosFirmados + " contrato(s) de aprendizaje firmados");
+            r.motivos.add(contratosFirmados == 1
+                    ? "1 contrato de aprendizaje firmado"
+                    : contratosFirmados + " contratos de aprendizaje firmados");
         }
         if (completados < 3) {
             r.motivos.add("Historial corto todavía");

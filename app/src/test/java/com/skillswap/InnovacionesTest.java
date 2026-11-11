@@ -180,6 +180,41 @@ public class InnovacionesTest {
         assertEquals("POO", android.siguientePaso().getHabilidad());
     }
 
+    /**
+     * Regresion: con un hueco en medio de la ruta (Figma hecho pero
+     * Wireframes no), antes se marcaban DOS pasos como "en curso" y en
+     * pantalla salian dos flechas. Solo debe haber una.
+     */
+    @Test
+    public void rutas_soloUnPasoEnCursoAunqueHayaHuecos() {
+        List<PassportEntry> pasaporte = new ArrayList<>();
+        pasaporte.add(entrada("Figma"));
+
+        LearningPathEngine.Ruta diseno = buscarRuta("Diseño de interfaces",
+                LearningPathEngine.rutasDe(pasaporte));
+
+        assertNotNull(diseno);
+        int enCurso = 0;
+        for (LearningPathEngine.Paso p : diseno.getPasos()) {
+            if (p.estaEnCurso()) enCurso++;
+        }
+        assertEquals(1, enCurso);
+        // Y debe ser el primero pendiente, no uno de más adelante.
+        assertEquals("Wireframes", diseno.siguientePaso().getHabilidad());
+        assertTrue(diseno.getPasos().get(0).estaEnCurso());
+    }
+
+    @Test
+    public void confiabilidad_usaSingularCuandoCorresponde() {
+        ReliabilityEngine.Resultado uno =
+                ReliabilityEngine.calcular(new User(), 1, 0, 4.8, 1);
+
+        String motivos = String.join(" | ", uno.getMotivos());
+        assertTrue(motivos.contains("Completó el único intercambio que empezó"));
+        assertTrue(motivos.contains("1 contrato de aprendizaje firmado"));
+        assertFalse(motivos.contains("los 1 intercambios"));
+    }
+
     @Test
     public void rutas_comparaSinTildesNiMayusculas() {
         List<PassportEntry> pasaporte = new ArrayList<>();

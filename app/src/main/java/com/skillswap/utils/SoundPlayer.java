@@ -30,14 +30,18 @@ public final class SoundPlayer {
         if (isSilent(context)) return;
 
         try {
-            final MediaPlayer player = MediaPlayer.create(
-                    context.getApplicationContext(), R.raw.intro_skillswap);
-            if (player == null) return;
-
-            player.setAudioAttributes(new AudioAttributes.Builder()
+            // Los atributos se pasan a create(): MediaPlayer.create() ya deja el
+            // reproductor preparado, y un setAudioAttributes posterior se ignora
+            // (se comprobo con `adb shell dumpsys audio`: salia USAGE_UNKNOWN).
+            AudioAttributes attrs = new AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_MEDIA)
                     .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
-                    .build());
+                    .build();
+
+            final MediaPlayer player = MediaPlayer.create(
+                    context.getApplicationContext(), R.raw.intro_skillswap,
+                    attrs, android.media.AudioManager.AUDIO_SESSION_ID_GENERATE);
+            if (player == null) return;
 
             player.setOnCompletionListener(MediaPlayer::release);
             player.setOnErrorListener((mp, what, extra) -> {

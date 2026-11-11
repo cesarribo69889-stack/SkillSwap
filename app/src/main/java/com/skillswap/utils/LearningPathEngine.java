@@ -156,12 +156,19 @@ public final class LearningPathEngine {
 
         List<Ruta> resultado = new ArrayList<>(catalogo().values());
         for (Ruta r : resultado) {
-            boolean anteriorCompletado = true;
+            // "En curso" marca UN solo paso por ruta: el primero pendiente.
+            // Si se marcara cualquier pendiente cuyo anterior este hecho,
+            // una ruta con huecos mostraria varias flechas a la vez y daria
+            // la impresion de que hay varios pasos actuales.
+            boolean yaMarcado = false;
             for (Paso p : r.pasos) {
                 p.completado = dominadas.contains(normalizar(p.habilidad));
-                // Esta "en curso" el primer paso pendiente cuyo anterior ya esta hecho.
-                p.enCurso = !p.completado && anteriorCompletado;
-                anteriorCompletado = p.completado;
+                if (!p.completado && !yaMarcado) {
+                    p.enCurso = true;
+                    yaMarcado = true;
+                } else {
+                    p.enCurso = false;
+                }
             }
         }
         return resultado;
