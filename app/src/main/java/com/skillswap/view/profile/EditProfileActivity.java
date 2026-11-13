@@ -276,6 +276,10 @@ public class EditProfileActivity extends BaseActivity {
                 Validators.validateMinLength(university, 3, "La universidad"));
         ok &= Validators.apply(binding.tilCareer,
                 Validators.validateMinLength(career, 3, "La carrera"));
+        // HU06: el ciclo es obligatorio. Antes un perfil sin ciclo se marcaba
+        // como completo y aparecia en los resultados de busqueda.
+        ok &= Validators.apply(binding.tilCycle,
+                Validators.text(binding.tilCycle).trim().isEmpty() ? "Selecciona tu ciclo" : null);
         if (!ok) return;
 
         String modality = "";

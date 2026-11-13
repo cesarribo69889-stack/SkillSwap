@@ -75,6 +75,14 @@ public class EvidenceRepository {
             return;
         }
 
+        // Mismo control que la foto de perfil (HU07): tipo y 5 MB maximo,
+        // tanto si se sube a Storage como si cae al respaldo incrustado.
+        String problema = ImageUtils.validar(context, fileUri);
+        if (problema != null) {
+            callback.onError(problema);
+            return;
+        }
+
         final StorageReference storage = FirebaseManager.storage().getReference()
                 .child(Constants.STORAGE_EVIDENCE)
                 .child(uid)

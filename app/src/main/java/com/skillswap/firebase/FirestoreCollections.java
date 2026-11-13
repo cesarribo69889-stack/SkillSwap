@@ -83,6 +83,14 @@ public final class FirestoreCollections {
         return FirebaseManager.db().collection(Constants.COL_SIGNATURES);
     }
 
+    public static CollectionReference reports() {
+        return FirebaseManager.db().collection(Constants.COL_REPORTS);
+    }
+
+    public static CollectionReference blocks() {
+        return FirebaseManager.db().collection(Constants.COL_BLOCKS);
+    }
+
     public static CollectionReference evidence() {
         return FirebaseManager.db().collection(Constants.COL_EVIDENCE);
     }

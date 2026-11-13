@@ -34,6 +34,7 @@ public class SkillMatchEngineTest {
         u.setUid(uid);
         u.setFirstName(firstName);
         u.setLastName("Apellido");
+        u.setProfileCompleted(true);   // HU06: rank() descarta los incompletos
         u.setModality(Constants.MODALITY_VIRTUAL);
         u.setAvailability(new ArrayList<>(Arrays.asList(
                 "Lunes a Viernes - Noche", "Sábados - Mañana")));
@@ -195,6 +196,28 @@ public class SkillMatchEngineTest {
         assertEquals("Los que dan 0 deben descartarse", 2, ranking.size());
         assertEquals("uid-ana", ranking.get(0).getUser().getUid());
         assertTrue(ranking.get(0).getScore() >= ranking.get(1).getScore());
+    }
+
+    /**
+     * HU06: un perfil incompleto no debe aparecer en los resultados, aunque
+     * sus habilidades sean perfectamente complementarias.
+     */
+    @Test
+    public void perfilIncompletoNoApareceEnLosResultados() {
+        User incompleto = ana();
+        incompleto.setProfileCompleted(false);
+
+        List<MatchResult> ranking = SkillMatchEngine.rank(cesar(), Arrays.asList(incompleto));
+
+        assertEquals("Un perfil incompleto se descarta aunque encaje al 90 % o mas",
+                0, ranking.size());
+    }
+
+    @Test
+    public void perfilCompletoSiApareceEnLosResultados() {
+        List<MatchResult> ranking = SkillMatchEngine.rank(cesar(), Arrays.asList(ana()));
+
+        assertEquals(1, ranking.size());
     }
 
     /** Nunca debe salirse del rango 0-100. */

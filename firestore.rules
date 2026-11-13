@@ -49,6 +49,44 @@ service cloud.firestore {
              .hasOnly(fields.toSet());
     }
 
+    // ------------------------------------------------------------------
+    // Contadores de gamificacion y reputacion.
+    //
+    // Estos valores los escriben las transacciones de la app, tambien sobre
+    // OTRO usuario (al cerrar un intercambio se da puntos a los dos, al
+    // calificar se actualiza la reputacion del calificado), asi que no se
+    // puede prohibir escribirlos. Lo que si se puede es acotar el dano:
+    // solo suben, y de a un premio por escritura.
+    //
+    // MITIGACION PARCIAL: quien escriba un script puede seguir sumando de a
+    // 25 en el libro de puntos. La defensa completa exige mover el calculo a
+    // una Cloud Function.
+    // ------------------------------------------------------------------
+
+    // El contador skillPoints del perfil no puede superar el saldo real del
+    // libro de puntos (coleccion skillPoints), que es el que tiene tope por
+    // escritura. Se ata al libro y no al valor anterior del propio perfil
+    // porque dos premios seguidos pueden llegar desordenados: con una regla
+    // "solo sube de a 25" el contador se quedaria atras y, desde entonces,
+    // cada escritura superaria el tope y seria rechazada para siempre.
+    function puntosValidos() {
+      return !changed(['skillPoints'])
+          || (request.resource.data.skillPoints >= 0
+              && request.resource.data.skillPoints
+                 <= get(/databases/$(database)/documents/skillPoints/$(resource.id)).data.points);
+    }
+
+    // La reputacion es un promedio de estrellas: siempre entre 0 y 5, y cada
+    // escritura anade como mucho una calificacion.
+    function reputacionValida() {
+      return (!changed(['reputation'])
+              || (request.resource.data.reputation >= 0
+                  && request.resource.data.reputation <= 5))
+          && (!changed(['totalRatings'])
+              || (request.resource.data.totalRatings >= resource.data.totalRatings
+                  && request.resource.data.totalRatings - resource.data.totalRatings <= 1));
+    }
+
     // El usuario participa en la solicitud indicada (RC3, firmas).
     function inRequest(requestId) {
       return isSignedIn()
@@ -84,20 +122,25 @@ service cloud.firestore {
                     && request.resource.data.exchangesCount == 0
                     && request.resource.data.skillPoints == 0;
 
-      // El dueño edita su perfil y sus habilidades, pero NO su reputación,
-      // número de intercambios ni SkillPoints: eso lo escriben las
-      // transacciones del servidor/app a través de reglas específicas.
+      // El dueño edita su perfil y sus habilidades, pero NO su reputación.
+      // Sus SkillPoints solo pueden subir, de a un premio por escritura (antes
+      // el comentario prometía bloquearlos y el código no lo hacía: el dueño
+      // podía ponerse 99999 puntos y colarse primero en la tabla de líderes).
       allow update: if isOwner(userId)
                     && request.resource.data.uid == resource.data.uid
-                    && !changed(['reputation', 'totalRatings']);
+                    && !changed(['reputation', 'totalRatings'])
+                    && puntosValidos();
 
       // Otro usuario solo puede incrementar contadores derivados de una
-      // acción legítima (calificar o cerrar un intercambio compartido).
+      // acción legítima (calificar o cerrar un intercambio compartido), con
+      // los topes de arriba.
       allow update: if isSignedIn()
                     && !isOwner(userId)
                     && onlyChanged(['reputation', 'totalRatings',
                                     'exchangesCount', 'skillPoints',
-                                    'gamificationLevel']);
+                                    'gamificationLevel'])
+                    && puntosValidos()
+                    && reputacionValida();
 
       allow delete: if isOwner(userId);
     }
@@ -176,11 +219,23 @@ service cloud.firestore {
       allow create: if willBeParticipant()
                     && inExchange(request.resource.data.exchangeId);
 
+      // Bloquear: cualquiera de los dos, y queda a su nombre. Desbloquear: solo
+      // quien bloqueo. Asi el bloqueado no puede levantar su propio bloqueo.
+      function bloqueoValido() {
+        return !changed(['blocked', 'blockedBy'])
+            || (request.resource.data.blocked == true
+                && request.resource.data.blockedBy == uid()
+                && resource.data.get('blocked', false) == false)
+            || (request.resource.data.blocked == false
+                && resource.data.get('blockedBy', '') == uid());
+      }
+
       allow update: if isParticipant()
                     && request.resource.data.participants ==
                        resource.data.participants
                     && request.resource.data.exchangeId ==
-                       resource.data.exchangeId;
+                       resource.data.exchangeId
+                    && bloqueoValido();
 
       allow delete: if false;
 
@@ -197,12 +252,29 @@ service cloud.firestore {
                  .data.enabled == true;
         }
 
+        // Un chat bloqueado no admite mensajes nuevos de nadie.
+        function chatLibre() {
+          return get(/databases/$(database)/documents/chats/$(chatId))
+                 .data.get('blocked', false) != true;
+        }
+
         allow read: if inChat();
 
         // Solo puedo enviar mensajes firmados con mi propio uid.
         allow create: if inChat()
                       && chatEnabled()
+                      && chatLibre()
                       && request.resource.data.senderId == uid()
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() > 0
+                      && request.resource.data.text.size() <= 2000;
+
+        // Mensaje de bienvenida que escribe la app al abrir el chat: no lo
+        // firma una persona, asi que su senderId es 'system'. Solo vale con
+        // ese tipo y sin que nadie lo haga pasar por un mensaje de usuario.
+        allow create: if inChat()
+                      && request.resource.data.senderId == 'system'
+                      && request.resource.data.type == 'SYSTEM'
                       && request.resource.data.text is string
                       && request.resource.data.text.size() > 0
                       && request.resource.data.text.size() <= 2000;
@@ -292,11 +364,20 @@ service cloud.firestore {
     // de quien otorga puntos por una acción compartida.
     match /skillPoints/{userId} {
       allow read: if isSignedIn();
+
+      // Una cuenta nueva nace con 0 puntos o con un primer premio (<= 25).
       allow create: if isSignedIn()
-                    && request.resource.data.userId == userId;
+                    && request.resource.data.userId == userId
+                    && request.resource.data.points >= 0
+                    && request.resource.data.points <= 25;
+
+      // Los puntos solo suben, de a un premio por escritura. Antes cualquier
+      // usuario autenticado podia dejar el saldo de cualquiera en el valor
+      // que quisiera. Mitigacion parcial: ver el comentario de puntosValidos().
       allow update: if isSignedIn()
                     && request.resource.data.userId == userId
-                    && request.resource.data.points >= 0;
+                    && request.resource.data.points >= resource.data.points
+                    && request.resource.data.points - resource.data.points <= 25;
       allow delete: if false;
 
       match /history/{entryId} {
@@ -397,6 +478,40 @@ service cloud.firestore {
                     && request.resource.data.textHash.size() == 64;
 
       allow update, delete: if false;
+    }
+
+    // ================================================================= reports
+    // Reportes de conducta desde el chat. Los revisa el equipo en la consola
+    // (que no pasa por estas reglas). El reportado nunca los ve.
+    match /reports/{reportId} {
+      allow read: if isSignedIn() && uid() == resource.data.reporterId;
+
+      allow create: if isSignedIn()
+                    && request.resource.data.reporterId == uid()
+                    && request.resource.data.reportedId is string
+                    && request.resource.data.reportedId != uid()
+                    && request.resource.data.reason is string
+                    && request.resource.data.reason.size() > 0
+                    && request.resource.data.reason.size() <= 100
+                    && request.resource.data.details.size() <= 1000
+                    && request.resource.data.status == 'PENDIENTE';
+
+      allow update, delete: if false;
+    }
+
+    // ================================================================== blocks
+    // Un documento por bloqueo, con id bloqueador__bloqueado. Solo lo ve y lo
+    // administra quien bloquea; el bloqueado no se entera por aqui.
+    match /blocks/{blockId} {
+      allow read: if isSignedIn() && uid() == resource.data.blockerId;
+
+      allow create: if isSignedIn()
+                    && request.resource.data.blockerId == uid()
+                    && request.resource.data.blockedId != uid()
+                    && blockId == uid() + '__' + request.resource.data.blockedId;
+
+      allow delete: if isSignedIn() && uid() == resource.data.blockerId;
+      allow update: if false;
     }
 
     // ------------------------------------------------------------------------

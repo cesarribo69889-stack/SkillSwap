@@ -173,6 +173,8 @@ public final class SkillMatchEngine {
         for (User u : candidates) {
             if (u == null || u.getUid() == null) continue;
             if (me != null && u.getUid().equals(me.getUid())) continue;
+            // HU06: un perfil incompleto no se ofrece como coincidencia.
+            if (!u.isProfileCompleted()) continue;
             MatchResult r = calculate(me, u);
             if (r.getScore() > 0) results.add(r);
         }

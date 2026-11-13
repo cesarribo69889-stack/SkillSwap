@@ -28,6 +28,40 @@ public final class ImageUtils {
     /** Prefijo que distingue una imagen incrustada de una URL normal. */
     public static final String DATA_PREFIX = "data:image/jpeg;base64,";
 
+    /** Tamano maximo del archivo ORIGINAL que se acepta (el de las reglas de Storage). */
+    public static final long MAX_ORIGINAL_BYTES = 5L * 1024 * 1024;
+
+    /**
+     * Regla de validacion, separada de Android para poder probarla: debe ser
+     * una imagen y pesar como mucho 5 MB. Devuelve el mensaje de error o null.
+     *
+     * Antes el limite de 5 MB solo existia en las reglas de Cloud Storage, asi
+     * que cuando el bucket fallaba y la foto caia al respaldo (incrustada en el
+     * documento) no se aplicaba ninguna comprobacion.
+     */
+    public static String errorDeImagen(String mime, long bytes) {
+        if (mime == null || !mime.startsWith("image/")) {
+            return "Elige una imagen (JPG o PNG).";
+        }
+        if (bytes > MAX_ORIGINAL_BYTES) {
+            return "La imagen pesa más de 5 MB. Elige una más liviana.";
+        }
+        return null;
+    }
+
+    /** Valida el archivo elegido por el usuario ANTES de subirlo o incrustarlo. */
+    public static String validar(Context context, Uri uri) {
+        String mime = context.getContentResolver().getType(uri);
+        long bytes = 0;
+        try (android.database.Cursor c = context.getContentResolver().query(
+                uri, new String[]{android.provider.OpenableColumns.SIZE}, null, null, null)) {
+            if (c != null && c.moveToFirst() && !c.isNull(0)) bytes = c.getLong(0);
+        } catch (Exception ignored) {
+            // Si no se puede leer el tamano, se confia en el recorte posterior.
+        }
+        return errorDeImagen(mime, bytes);
+    }
+
     /** Avatar: cuadrado pequeno, se copia en chats e intercambios. */
     private static final int AVATAR_SIZE = 192;
     private static final int AVATAR_QUALITY = 70;

@@ -12,10 +12,12 @@ import com.skillswap.model.Resource;
 import com.skillswap.model.User;
 import com.skillswap.repository.MatchRepository;
 import com.skillswap.repository.RepoCallback;
+import com.skillswap.repository.SafetyRepository;
 import com.skillswap.repository.UserRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /** ViewModel de la pantalla Explorar (SkillMatch + filtros). */
 public class ExploreViewModel extends ViewModel {
@@ -64,12 +66,24 @@ public class ExploreViewModel extends ViewModel {
         results.postValue(Resource.<List<MatchResult>>loading());
         matchRepository.findMatches(me, new RepoCallback<List<MatchResult>>() {
             @Override
-            public void onSuccess(List<MatchResult> data) {
-                allMatches = data;
-                applyCurrentFilter();
-                // RC1: se guarda lo ultimo mostrado para poder consultarlo
-                // sin conexion la proxima vez que se abra Explorar.
-                LocalCache.guardarCoincidencias(SkillSwapApp.contexto(), data);
+            public void onSuccess(final List<MatchResult> data) {
+                // Quien yo bloquee no aparece en Explorar.
+                SafetyRepository.get().fetchBlockedIds(new RepoCallback<Set<String>>() {
+                    @Override
+                    public void onSuccess(Set<String> bloqueados) {
+                        allMatches = SafetyRepository.sinBloqueados(data, bloqueados);
+                        applyCurrentFilter();
+                        // RC1: se guarda lo ultimo mostrado para poder consultarlo
+                        // sin conexion la proxima vez que se abra Explorar.
+                        LocalCache.guardarCoincidencias(SkillSwapApp.contexto(), allMatches);
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        allMatches = data;
+                        applyCurrentFilter();
+                    }
+                });
             }
 
             @Override

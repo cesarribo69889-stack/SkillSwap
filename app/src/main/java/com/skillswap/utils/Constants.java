@@ -26,6 +26,9 @@ public final class Constants {
     public static final String COL_EVIDENCE = "learningEvidence";
     /** RC3 - constancias de aceptacion firmadas. */
     public static final String COL_SIGNATURES = "signatures";
+    /** Seguridad: reportes de conducta y bloqueos entre estudiantes. */
+    public static final String COL_REPORTS = "reports";
+    public static final String COL_BLOCKS = "blocks";
     /** RC3 - ancho maximo de la imagen de firma al guardarla. */
     public static final int SIGNATURE_MAX_WIDTH = 600;
 

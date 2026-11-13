@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 
 import com.skillswap.repository.SignatureRepository;
 import com.skillswap.utils.GeoUtils;
+import com.skillswap.utils.ImageUtils;
 import com.skillswap.webservice.SoapCountryClient;
 
 import org.junit.Test;
@@ -88,6 +89,30 @@ public class RequisitosCursoTest {
         // Vector de prueba estandar: SHA-256 de la cadena vacia.
         assertEquals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
                 SignatureRepository.sha256(""));
+    }
+
+    // ===================================================== HU07 (foto de perfil)
+
+    @Test
+    public void foto_aceptaUnaImagenDentroDelLimite() {
+        assertEquals(null, ImageUtils.errorDeImagen("image/jpeg", 2 * 1024 * 1024));
+        assertEquals(null, ImageUtils.errorDeImagen("image/png", 1024));
+    }
+
+    @Test
+    public void foto_rechazaLoQueNoEsUnaImagen() {
+        assertTrue(ImageUtils.errorDeImagen("application/pdf", 1024) != null);
+        assertTrue(ImageUtils.errorDeImagen("text/plain", 10) != null);
+        assertTrue("Sin tipo conocido tambien se rechaza",
+                ImageUtils.errorDeImagen(null, 1024) != null);
+    }
+
+    @Test
+    public void foto_rechazaLoQuePesaMasDeCincoMegas() {
+        long justoEnElLimite = 5L * 1024 * 1024;
+        assertEquals("Exactamente 5 MB todavia vale",
+                null, ImageUtils.errorDeImagen("image/jpeg", justoEnElLimite));
+        assertTrue(ImageUtils.errorDeImagen("image/jpeg", justoEnElLimite + 1) != null);
     }
 
     // ===================================================== RC4 (ubicacion)

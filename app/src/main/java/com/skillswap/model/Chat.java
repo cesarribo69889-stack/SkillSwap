@@ -24,6 +24,14 @@ public class Chat implements Serializable {
     private boolean enabled = true;
     private long createdAt = 0L;
 
+    /**
+     * Bloqueo entre los dos estudiantes. Mientras este activo nadie puede
+     * escribir en el chat (lo impone la regla de seguridad, no solo la app) y
+     * unicamente quien bloqueo puede levantarlo.
+     */
+    private boolean blocked = false;
+    private String blockedBy = "";
+
     public Chat() {
     }
 
@@ -92,6 +100,18 @@ public class Chat implements Serializable {
 
     public boolean isEnabled() { return enabled; }
     public void setEnabled(boolean enabled) { this.enabled = enabled; }
+
+    public boolean isBlocked() { return blocked; }
+    public void setBlocked(boolean blocked) { this.blocked = blocked; }
+
+    public String getBlockedBy() { return blockedBy; }
+    public void setBlockedBy(String blockedBy) { this.blockedBy = blockedBy == null ? "" : blockedBy; }
+
+    /** true si el bloqueo lo puse yo (y por tanto soy quien puede levantarlo). */
+    @Exclude
+    public boolean isBlockedByMe(String myUid) {
+        return blocked && myUid != null && myUid.equals(blockedBy);
+    }
 
     public long getCreatedAt() { return createdAt; }
     public void setCreatedAt(long createdAt) { this.createdAt = createdAt; }

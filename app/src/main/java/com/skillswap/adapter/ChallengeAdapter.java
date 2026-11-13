@@ -47,6 +47,7 @@ public class   ChallengeAdapter extends RecyclerView.Adapter<ChallengeAdapter.VH
     public void submit(List<Challenge> data) {
         items.clear();
         if (data != null) items.addAll(data);
+
         notifyDataSetChanged();
     }
 

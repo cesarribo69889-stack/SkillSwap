@@ -143,6 +143,11 @@ public class CoreLogicTest {
         u.setLearnSkills(new ArrayList<>(Arrays.asList(
                 new UserSkill("java", "Java", "Programación",
                         Constants.LEVEL_BASIC, UserSkill.TYPE_LEARN))));
+
+        // HU06: con todo lo demás pero SIN ciclo, el perfil sigue incompleto.
+        assertFalse("Sin ciclo no está completo", UserRepository.isProfileComplete(u));
+
+        u.setCycle("Ciclo VI");
         assertTrue(UserRepository.isProfileComplete(u));
     }
 

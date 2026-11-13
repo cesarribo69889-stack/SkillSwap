@@ -232,6 +232,12 @@ public class UserRepository {
             callback.onError("Selecciona una imagen");
             return;
         }
+        // HU07: tipo y tamano se comprueban antes de subir O incrustar.
+        String problema = ImageUtils.validar(context, uri);
+        if (problema != null) {
+            callback.onError(problema);
+            return;
+        }
         final StorageReference ref = FirebaseManager.storage().getReference()
                 .child(Constants.STORAGE_AVATARS)
                 .child(uid + ".jpg");
@@ -335,6 +341,19 @@ public class UserRepository {
                             u.setLearnSkills(learn);
                             u.setTeachSkillKeys(keysOf(teach));
                             u.setLearnSkillKeys(keysOf(learn));
+
+                            // HU06: un perfil esta completo cuando tiene tambien
+                            // habilidades. Si no se recalcula aqui, quien completa
+                            // el perfil y DESPUES anade sus habilidades se queda
+                            // marcado como incompleto y desaparece de Explorar.
+                            boolean completo = isProfileComplete(u);
+                            if (completo != u.isProfileCompleted()) {
+                                u.setProfileCompleted(completo);
+                                Map<String, Object> flag = new HashMap<>();
+                                flag.put("profileCompleted", completo);
+                                FirestoreCollections.user(uid)
+                                        .set(flag, com.google.firebase.firestore.SetOptions.merge());
+                            }
                             currentUser.postValue(u);
                         }
                         callback.onSuccess(Boolean.TRUE);
@@ -442,6 +461,7 @@ public class UserRepository {
         return u != null
                 && !isBlank(u.getUniversity())
                 && !isBlank(u.getCareer())
+                && !isBlank(u.getCycle())
                 && !isBlank(u.getModality())
                 && !u.getTeachSkills().isEmpty()
                 && !u.getLearnSkills().isEmpty();

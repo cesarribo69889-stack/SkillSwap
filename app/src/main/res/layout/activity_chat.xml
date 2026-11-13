@@ -76,6 +76,16 @@
                 android:contentDescription="@string/my_exchanges"
                 android:src="@drawable/ic_swap"
                 app:tint="@color/brand_primary" />
+
+            <!-- Seguridad: reportar o bloquear a la otra persona -->
+            <ImageButton
+                android:id="@+id/btnMore"
+                android:layout_width="42dp"
+                android:layout_height="42dp"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/chat_more_options"
+                android:src="@drawable/ic_more_vert"
+                app:tint="@color/brand_primary" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

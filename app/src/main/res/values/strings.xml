@@ -390,6 +390,24 @@
     <string name="schedule_match">Horarios en común</string>
     <string name="reliability_index">Índice de confiabilidad</string>
     <string name="reliability_explain">Mide si se puede contar contigo: intercambios terminados, puntualidad y contratos firmados. No es una nota académica.</string>
+    <!-- Seguridad: reportar y bloquear -->
+    <string name="report_next">Siguiente</string>
+    <string name="chat_more_options">Más opciones</string>
+    <string name="chat_report">Reportar a esta persona</string>
+    <string name="chat_block">Bloquear a esta persona</string>
+    <string name="chat_unblock">Desbloquear</string>
+    <string name="report_title">Reportar a %1$s</string>
+    <string name="report_details_hint">Cuéntanos qué pasó (opcional)</string>
+    <string name="report_send">Enviar reporte</string>
+    <string name="report_sent">Reporte enviado. El equipo lo revisará.</string>
+    <string name="report_pick_reason">Elige un motivo</string>
+    <string name="block_title">¿Bloquear a %1$s?</string>
+    <string name="block_message">Nadie podrá escribir en este chat y dejará de aparecer en tus resultados de Explorar. Solo tú puedes deshacerlo.</string>
+    <string name="block_done">Persona bloqueada</string>
+    <string name="unblock_done">Persona desbloqueada</string>
+    <string name="chat_blocked_banner">Chat bloqueado</string>
+    <string name="chat_blocked_by_other">No puedes escribir en este chat</string>
+
     <!-- RC4: estudiantes cercanos -->
     <string name="nearby_toggle">Cercanos</string>
     <string name="nearby_denied">Sin el permiso de ubicación no se puede ordenar por cercanía</string>

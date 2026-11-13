@@ -378,7 +378,10 @@ insignia() { # uid token codigo nombre desc
 
 for p in "$UA:$TA" "$UB:$TB"; do
   U="${p%%:*}"; T="${p##*:}"
-  puntos "$U" "$T" 53 > /dev/null
+  # Las reglas limitan cada escritura del saldo a +25 y no dejan bajarlo, asi
+  # que 53 se alcanza en escalones. Si ya vale 53, los dos primeros se
+  # rechazan (serian una bajada) y el tercero es igual y pasa.
+  for escalon in 25 50 53; do puntos "$U" "$T" $escalon > /dev/null; done
   historial "$U" "$T" h01  8 "Contrato aceptado"        1000 > /dev/null
   historial "$U" "$T" h02 15 "Sesion registrada"        2000 > /dev/null
   historial "$U" "$T" h03 25 "Intercambio completado"   3000 > /dev/null
