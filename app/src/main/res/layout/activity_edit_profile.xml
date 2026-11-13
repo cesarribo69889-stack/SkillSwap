@@ -103,12 +103,25 @@
                 android:hint="@string/hint_university"
                 app:startIconDrawable="@drawable/ic_school">
 
-                <com.google.android.material.textfield.TextInputEditText
+                <!-- RC2: sugiere universidades desde el servicio REST -->
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
                     android:id="@+id/edtUniversity"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:completionThreshold="3"
                     android:inputType="textCapWords" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <!-- RC2: pais e idioma que devuelve el servicio SOAP -->
+            <TextView
+                android:id="@+id/txtCountryInfo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="6dp"
+                android:drawablePadding="8dp"
+                android:textAppearance="@style/TextAppearance.SkillSwap.Caption"
+                app:drawableStartCompat="@drawable/ic_language" />
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilCareer"

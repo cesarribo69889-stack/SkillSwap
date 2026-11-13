@@ -43,6 +43,13 @@ public class User implements Serializable {
     private String gamificationLevel = "";
 
     private String fcmToken = "";
+    /**
+     * RC4 - Ubicacion APROXIMADA, redondeada a dos decimales (~1 km).
+     * Vale 0 mientras el estudiante no active "Mostrar estudiantes cercanos".
+     */
+    private double lat = 0d;
+    private double lon = 0d;
+
     private boolean profileCompleted = false;
     private boolean active = true;
     private long createdAt = 0L;
@@ -169,6 +176,12 @@ public class User implements Serializable {
     public void setSearchKeywords(List<String> searchKeywords) {
         this.searchKeywords = searchKeywords == null ? new ArrayList<String>() : searchKeywords;
     }
+
+    public double getLat() { return lat; }
+    public void setLat(double lat) { this.lat = lat; }
+
+    public double getLon() { return lon; }
+    public void setLon(double lon) { this.lon = lon; }
 
     public double getReputation() { return reputation; }
     public void setReputation(double reputation) { this.reputation = reputation; }

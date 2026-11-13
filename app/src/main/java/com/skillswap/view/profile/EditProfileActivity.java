@@ -18,7 +18,12 @@ import com.skillswap.R;
 import com.skillswap.databinding.ActivityEditProfileBinding;
 import com.skillswap.model.Resource;
 import com.skillswap.model.User;
+import android.text.Editable;
+import android.text.TextWatcher;
+
 import com.skillswap.utils.ChipFactory;
+import com.skillswap.webservice.RestClient;
+import com.skillswap.webservice.SoapCountryClient;
 import com.skillswap.utils.Constants;
 import com.skillswap.utils.ImageLoader;
 import com.skillswap.utils.UiUtils;
@@ -34,6 +39,9 @@ import java.util.List;
 
 /** Edicion del perfil del estudiante. */
 public class EditProfileActivity extends BaseActivity {
+
+    /** Ultimo texto consultado al servicio REST, para no repetir peticiones. */
+    private String ultimaConsulta = "";
 
     public static final String EXTRA_FIRST_TIME = "extra_first_time";
 
@@ -65,6 +73,7 @@ public class EditProfileActivity extends BaseActivity {
         setupToolbar(binding.toolbarInc.toolbar,
                 firstTime ? "Completa tu perfil" : getString(R.string.profile_edit));
         setupCycles();
+        setupWebServices();
         setupAvailability();
 
         binding.fabPhoto.setOnClickListener(v -> pickImage.launch("image/*"));
@@ -122,6 +131,89 @@ public class EditProfileActivity extends BaseActivity {
         if (binding.tilCycle.getEditText() instanceof MaterialAutoCompleteTextView) {
             ((MaterialAutoCompleteTextView) binding.tilCycle.getEditText()).setAdapter(adapter);
         }
+    }
+
+    /**
+     * RC2 - Servicios web.
+     *
+     * REST: mientras el estudiante escribe el nombre de su universidad, se
+     * consulta la API de Hipolabs y se ofrecen sugerencias.
+     * SOAP: al elegir una, se completa el pais y el idioma con
+     * CountryInfoService.
+     *
+     * Si cualquiera de los dos falla, el campo queda como texto libre y el
+     * perfil se puede guardar igual.
+     */
+    private void setupWebServices() {
+        if (!(binding.tilUniversity.getEditText() instanceof MaterialAutoCompleteTextView)) return;
+        final MaterialAutoCompleteTextView campo =
+                (MaterialAutoCompleteTextView) binding.tilUniversity.getEditText();
+
+        campo.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int a, int b, int c) {
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                String texto = s == null ? "" : s.toString().trim();
+                // Se consulta a partir de 3 letras para no saturar el servicio.
+                if (texto.length() < 3) return;
+                if (texto.equals(ultimaConsulta)) return;
+                ultimaConsulta = texto;
+
+                RestClient.buscarUniversidades(texto, new RestClient.UniversidadesCallback() {
+                    @Override
+                    public void onResultado(List<String> nombres) {
+                        if (isFinishing() || nombres.isEmpty()) return;
+                        campo.setSimpleItems(nombres.toArray(new String[0]));
+                        campo.showDropDown();
+                    }
+
+                    @Override
+                    public void onError(String mensaje) {
+                        // Silencioso: el campo sigue siendo de texto libre.
+                    }
+                });
+            }
+        });
+
+        // Al elegir una universidad de la lista se pide pais e idioma por SOAP.
+        campo.setOnItemClickListener((parent, view, position, id) -> consultarPaisPorSoap());
+        consultarPaisPorSoap();
+    }
+
+    private void consultarPaisPorSoap() {
+        SoapCountryClient.nombreDePais("PE", new SoapCountryClient.Callback() {
+            @Override
+            public void onResultado(final String pais) {
+                SoapCountryClient.nombreDeIdioma("es", new SoapCountryClient.Callback() {
+                    @Override
+                    public void onResultado(String idioma) {
+                        if (isFinishing()) return;
+                        binding.txtCountryInfo.setText(getString(
+                                R.string.fmt_country_info, pais, idioma));
+                    }
+
+                    @Override
+                    public void onError(String mensaje) {
+                        if (isFinishing()) return;
+                        binding.txtCountryInfo.setText(getString(
+                                R.string.fmt_country_info_partial, pais));
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String mensaje) {
+                if (isFinishing()) return;
+                binding.txtCountryInfo.setText(R.string.country_info_unavailable);
+            }
+        });
     }
 
     private void setupAvailability() {

@@ -78,6 +78,11 @@ public final class FirestoreCollections {
         return FirebaseManager.db().collection(Constants.COL_CHALLENGE_PARTICIPANTS);
     }
 
+    /** RC3 - constancias de aceptacion firmadas. */
+    public static CollectionReference signatures() {
+        return FirebaseManager.db().collection(Constants.COL_SIGNATURES);
+    }
+
     public static CollectionReference evidence() {
         return FirebaseManager.db().collection(Constants.COL_EVIDENCE);
     }

@@ -98,10 +98,21 @@ public class ExchangeRequestRepository {
         return listen("fromUserId", uid, cb);
     }
 
-    private ListenerRegistration listen(String field, String uid,
+    /**
+     * Se consulta por "participants" y NO por toUserId/fromUserId.
+     *
+     * La regla de seguridad autoriza con `uid() in resource.data.participants`.
+     * Firestore solo acepta una consulta si puede demostrar, mirando los
+     * filtros, que todos los resultados seran legibles: al filtrar por otro
+     * campo rechazaba la consulta entera con PERMISSION_DENIED y la pantalla
+     * salia siempre vacia. Filtrando por el mismo campo que usa la regla, la
+     * consulta es valida; el reparto entre recibidas y enviadas se hace
+     * despues en memoria, que son como mucho 100 documentos.
+     */
+    private ListenerRegistration listen(final String field, final String uid,
                                         final RepoCallback<List<ExchangeRequest>> callback) {
         return FirestoreCollections.requests()
-                .whereEqualTo(field, uid)
+                .whereArrayContains("participants", uid)
                 .limit(100)
                 .addSnapshotListener(new EventListener<QuerySnapshot>() {
                     @Override
@@ -116,7 +127,11 @@ public class ExchangeRequestRepository {
                             for (QueryDocumentSnapshot doc : snapshots) {
                                 ExchangeRequest r = doc.toObject(ExchangeRequest.class);
                                 r.setId(doc.getId());
-                                list.add(r);
+                                // Reparto en memoria: "toUserId" son las
+                                // recibidas y "fromUserId" las enviadas.
+                                String valor = "toUserId".equals(field)
+                                        ? r.getToUserId() : r.getFromUserId();
+                                if (uid.equals(valor)) list.add(r);
                             }
                         }
                         Collections.sort(list, new Comparator<ExchangeRequest>() {

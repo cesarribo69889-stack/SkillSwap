@@ -390,6 +390,27 @@
     <string name="schedule_match">Horarios en común</string>
     <string name="reliability_index">Índice de confiabilidad</string>
     <string name="reliability_explain">Mide si se puede contar contigo: intercambios terminados, puntualidad y contratos firmados. No es una nota académica.</string>
+    <!-- RC4: estudiantes cercanos -->
+    <string name="nearby_toggle">Cercanos</string>
+    <string name="nearby_denied">Sin el permiso de ubicación no se puede ordenar por cercanía</string>
+    <string name="nearby_privacy">Se guarda una ubicación aproximada (redondeada a ~1 km), nunca la posición exacta.</string>
+
+    <!-- RC3: firma de la aceptacion -->
+    <string name="signature_title">Firmar la aceptación</string>
+    <string name="signature_summary_title">Lo que estás aceptando</string>
+    <string name="signature_draw_here">Firma con el dedo</string>
+    <string name="signature_clear">Borrar</string>
+    <string name="signature_confirm">Firmar y aceptar</string>
+    <string name="signature_required">Dibuja tu firma para continuar</string>
+    <string name="signature_terms">Acepto realizar este intercambio de buena fe, coordinar las sesiones con mi compañero y cumplir las normas de convivencia de SkillSwap. Declaro haber leído los términos y condiciones y la política de datos personales.</string>
+    <string name="signature_disclaimer">Esta es una firma manuscrita digitalizada que deja constancia de tu aceptación. No es una firma digital con certificado ni sustituye a un documento legal.</string>
+    <string name="fmt_signature_summary">Tú enseñas %1$s y aprendes %2$s con %3$s. Modalidad: %4$s.</string>
+
+    <!-- RC2: datos que devuelve el servicio SOAP -->
+    <string name="fmt_country_info">País: %1$s · Idioma: %2$s (servicio SOAP)</string>
+    <string name="fmt_country_info_partial">País: %1$s (servicio SOAP)</string>
+    <string name="country_info_unavailable">País e idioma no disponibles ahora</string>
+
     <string name="schedule_none">Sin horarios en común</string>
     <string name="reliability_no_data">Sin historial todavía</string>
     <string name="fmt_schedule_match">Coinciden: %1$s</string>

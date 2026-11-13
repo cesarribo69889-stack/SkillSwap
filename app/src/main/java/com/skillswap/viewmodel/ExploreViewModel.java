@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.skillswap.model.ExploreFilter;
+import com.skillswap.SkillSwapApp;
+import com.skillswap.local.LocalCache;
 import com.skillswap.model.MatchResult;
 import com.skillswap.model.Resource;
 import com.skillswap.model.User;
@@ -65,6 +67,9 @@ public class ExploreViewModel extends ViewModel {
             public void onSuccess(List<MatchResult> data) {
                 allMatches = data;
                 applyCurrentFilter();
+                // RC1: se guarda lo ultimo mostrado para poder consultarlo
+                // sin conexion la proxima vez que se abra Explorar.
+                LocalCache.guardarCoincidencias(SkillSwapApp.contexto(), data);
             }
 
             @Override

@@ -3,6 +3,8 @@ package com.skillswap.view.exchange;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -36,6 +38,24 @@ public class RequestsActivity extends BaseActivity {
     private List<ExchangeRequest> received = new ArrayList<>();
     private List<ExchangeRequest> sent = new ArrayList<>();
 
+    /** RC3: solicitud a la espera de que se firme la aceptacion. */
+    private ExchangeRequest pendiente;
+
+    /**
+     * El intercambio solo se acepta si la firma quedo registrada. Si el
+     * estudiante vuelve atras sin firmar, no pasa nada.
+     */
+    private final ActivityResultLauncher<Intent> firmaLauncher =
+            registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+                    result -> {
+                        if (result.getResultCode() != RESULT_OK || pendiente == null) {
+                            pendiente = null;
+                            return;
+                        }
+                        viewModel.accept(pendiente);
+                        pendiente = null;
+                    });
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,11 +68,15 @@ public class RequestsActivity extends BaseActivity {
         adapter = new RequestAdapter(new RequestAdapter.OnRequestAction() {
             @Override
             public void onAccept(final ExchangeRequest request) {
-                confirm("Aceptar intercambio",
-                        "Se creará el intercambio con " + request.getFromUserName()
-                                + " y se habilitará el chat.",
-                        "Aceptar",
-                        () -> viewModel.accept(request));
+                // RC3: antes de aceptar hay que firmar la constancia.
+                pendiente = request;
+                Intent intent = new Intent(RequestsActivity.this, SignatureActivity.class);
+                intent.putExtra(Constants.EXTRA_REQUEST_ID, request.getId());
+                intent.putExtra(SignatureActivity.EXTRA_RESUMEN,
+                        getString(R.string.fmt_signature_summary,
+                                request.getSkillWanted(), request.getSkillOffered(),
+                                request.getFromUserName(), request.getModality()));
+                firmaLauncher.launch(intent);
             }
 
             @Override

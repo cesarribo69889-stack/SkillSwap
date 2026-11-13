@@ -75,6 +75,18 @@ dependencies {
     implementation(libs.glide)
     implementation(libs.circleimageview)
 
+    // RC1 - cache local en SQLite con Room
+    implementation(libs.room.runtime)
+    annotationProcessor(libs.room.compiler)
+
+    // RC2 - servicio REST. El SOAP se arma a mano con HttpURLConnection,
+    // porque ksoap2-android ya no se publica en Maven Central.
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+
+    // RC4 - geolocalizacion aproximada
+    implementation(libs.play.services.location)
+
     // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

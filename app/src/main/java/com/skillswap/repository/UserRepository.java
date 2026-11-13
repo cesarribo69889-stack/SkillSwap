@@ -25,7 +25,9 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.skillswap.SkillSwapApp;
 import com.skillswap.firebase.FirebaseManager;
+import com.skillswap.local.LocalCache;
 import com.skillswap.firebase.FirestoreCollections;
 import com.skillswap.model.User;
 import com.skillswap.model.UserSkill;
@@ -81,6 +83,8 @@ public class UserRepository {
                         if (u != null) {
                             u.setUid(snapshot.getId());
                             currentUser.postValue(u);
+                            // RC1: copia local para poder abrir la app sin conexion.
+                            LocalCache.guardarPerfil(SkillSwapApp.contexto(), u);
                         }
                     }
                 });
@@ -96,6 +100,8 @@ public class UserRepository {
     public void clearCache() {
         detachCurrentUser();
         currentUser.postValue(null);
+        // RC1: al cerrar sesion no debe quedar nada del usuario en el telefono.
+        LocalCache.limpiar(SkillSwapApp.contexto());
     }
 
     public void createUser(final User user, final RepoCallback<User> callback) {
@@ -119,6 +125,37 @@ public class UserRepository {
                         callback.onError(FirebaseErrors.translate(e));
                     }
                 });
+    }
+
+    /**
+     * RC4 - Guarda la ubicacion aproximada del estudiante.
+     *
+     * Llega ya redondeada desde LocationHelper, asi que aqui no se escribe
+     * nunca la posicion exacta.
+     */
+    public void updateLocation(final double lat, final double lon,
+                               final RepoCallback<Boolean> callback) {
+        String uid = FirebaseManager.uid();
+        if (uid == null || uid.isEmpty()) {
+            callback.onError("Sesión no válida");
+            return;
+        }
+        Map<String, Object> data = new HashMap<>();
+        data.put("lat", lat);
+        data.put("lon", lon);
+        data.put("updatedAt", System.currentTimeMillis());
+
+        FirestoreCollections.user(uid)
+                .set(data, com.google.firebase.firestore.SetOptions.merge())
+                .addOnSuccessListener(unused -> {
+                    User actual = currentUser.getValue();
+                    if (actual != null) {
+                        actual.setLat(lat);
+                        actual.setLon(lon);
+                    }
+                    callback.onSuccess(Boolean.TRUE);
+                })
+                .addOnFailureListener(e -> callback.onError(FirebaseErrors.translate(e)));
     }
 
     public void fetchUser(final String uid, final RepoCallback<User> callback) {

@@ -49,6 +49,14 @@ service cloud.firestore {
              .hasOnly(fields.toSet());
     }
 
+    // El usuario participa en la solicitud indicada (RC3, firmas).
+    function inRequest(requestId) {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/exchangeRequests/$(requestId))
+        && uid() in get(/databases/$(database)/documents/exchangeRequests/$(requestId))
+             .data.participants;
+    }
+
     // El usuario participa en el intercambio indicado.
     function inExchange(exchangeId) {
       return isSignedIn()
@@ -369,6 +377,26 @@ service cloud.firestore {
 
       allow update: if isSignedIn() && uid() == resource.data.userId;
       allow delete: if isSignedIn() && uid() == resource.data.userId;
+    }
+
+    // ============================================================= signatures
+    // RC3 - Constancia de que un estudiante aceptó un intercambio.
+    // Una firma emitida es un hecho: no se modifica ni se borra nunca.
+    match /signatures/{signatureId} {
+      // La leen los participantes de la solicitud asociada.
+      allow read: if isSignedIn()
+                  && (uid() == resource.data.userId
+                      || inRequest(resource.data.requestId));
+
+      // Solo puedo firmar en mi propio nombre, y el id debe derivar de mi uid
+      // para que nadie pueda sobrescribir la firma de otro.
+      allow create: if isSignedIn()
+                    && request.resource.data.userId == uid()
+                    && signatureId == request.resource.data.requestId + '__' + uid()
+                    && request.resource.data.textHash is string
+                    && request.resource.data.textHash.size() == 64;
+
+      allow update, delete: if false;
     }
 
     // ------------------------------------------------------------------------

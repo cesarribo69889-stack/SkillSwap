@@ -24,6 +24,10 @@ public final class Constants {
     public static final String COL_CHALLENGES = "challenges";
     public static final String COL_CHALLENGE_PARTICIPANTS = "challengeParticipants";
     public static final String COL_EVIDENCE = "learningEvidence";
+    /** RC3 - constancias de aceptacion firmadas. */
+    public static final String COL_SIGNATURES = "signatures";
+    /** RC3 - ancho maximo de la imagen de firma al guardarla. */
+    public static final int SIGNATURE_MAX_WIDTH = 600;
 
     // ---------- Storage ----------
     public static final String STORAGE_AVATARS = "avatars";

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    RC2 - Los dos servicios web publicos que consume la app solo ofrecen HTTP,
+    no HTTPS. En lugar de permitir trafico sin cifrar en toda la aplicacion,
+    la excepcion se limita a esos dos dominios. El resto del trafico (Firebase
+    incluido) sigue obligado a usar HTTPS.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false" />
+
+    <domain-config cleartextTrafficPermitted="true">
+        <!-- Servicio REST: sugerencia de universidades -->
+        <domain includeSubdomains="true">universities.hipolabs.com</domain>
+        <!-- Servicio SOAP: pais e idioma -->
+        <domain includeSubdomains="true">webservices.oorsprong.org</domain>
+    </domain-config>
+</network-security-config>

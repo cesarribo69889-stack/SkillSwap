@@ -8,6 +8,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -21,7 +23,12 @@ import com.skillswap.databinding.FragmentExploreBinding;
 import com.skillswap.model.ExploreFilter;
 import com.skillswap.model.MatchResult;
 import com.skillswap.model.Resource;
+import com.skillswap.model.User;
+import com.skillswap.repository.RepoCallback;
+import com.skillswap.repository.UserRepository;
 import com.skillswap.utils.ChipFactory;
+import com.skillswap.utils.GeoUtils;
+import com.skillswap.utils.LocationHelper;
 import com.skillswap.utils.Constants;
 import com.skillswap.utils.UiUtils;
 import com.skillswap.view.exchange.SendRequestActivity;
@@ -29,6 +36,7 @@ import com.skillswap.view.profile.UserProfileActivity;
 import com.skillswap.viewmodel.ExploreViewModel;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /** Explorar estudiantes con SkillMatch, buscador y filtros. */
@@ -40,6 +48,18 @@ public class ExploreFragment extends Fragment {
 
     /** Habilidad pedida desde Inicio antes de que la vista exista. */
     private String pendingSkill;
+
+    /** RC4 - permiso de ubicacion aproximada, pedido al activar "Cercanos". */
+    private final ActivityResultLauncher<String> permisoUbicacion =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(),
+                    concedido -> {
+                        if (binding == null) return;
+                        if (concedido) {
+                            obtenerYGuardarUbicacion();
+                        } else {
+                            avisarYDesmarcar(getString(R.string.nearby_denied));
+                        }
+                    });
 
     /**
      * Filtra la lista por una habilidad concreta. Se invoca desde Inicio al
@@ -113,6 +133,7 @@ public class ExploreFragment extends Fragment {
             });
         }
 
+        setupCercanos();
         observe();
         viewModel.load();
 
@@ -139,6 +160,10 @@ public class ExploreFragment extends Fragment {
                         }
 
                         List<MatchResult> data = state.getData();
+                        // RC4: si "Cercanos" esta activo, se reordena por distancia.
+                        if (binding.chipCercanos.isChecked()) {
+                            data = ordenarPorCercania(data);
+                        }
                         adapter.submit(data);
                         boolean empty = data == null || data.isEmpty();
                         UiUtils.visible(binding.empty.getRoot(), empty);
@@ -160,6 +185,83 @@ public class ExploreFragment extends Fragment {
                 renderActiveChips(filter);
             }
         });
+    }
+
+    /**
+     * RC4 - "Mostrar estudiantes cercanos".
+     *
+     * El permiso se pide AQUI, al activar la opcion, no al abrir la app. Si
+     * el estudiante lo rechaza, el chip se desmarca y Explorar sigue
+     * funcionando con el orden normal por compatibilidad.
+     */
+    private void setupCercanos() {
+        binding.chipCercanos.setOnCheckedChangeListener((boton, activado) -> {
+            if (!activado) {
+                viewModel.load();
+                return;
+            }
+            if (LocationHelper.tienePermiso(requireContext())) {
+                obtenerYGuardarUbicacion();
+            } else {
+                permisoUbicacion.launch(LocationHelper.PERMISO);
+            }
+        });
+    }
+
+    private void obtenerYGuardarUbicacion() {
+        LocationHelper.obtener(requireContext(), new LocationHelper.Callback() {
+            @Override
+            public void onUbicacion(double lat, double lon) {
+                if (binding == null) return;
+                UserRepository.get().updateLocation(lat, lon, new RepoCallback<Boolean>() {
+                    @Override
+                    public void onSuccess(Boolean data) {
+                        if (binding == null) return;
+                        viewModel.load();
+                    }
+
+                    @Override
+                    public void onError(String message) {
+                        avisarYDesmarcar(message);
+                    }
+                });
+            }
+
+            @Override
+            public void onError(String mensaje) {
+                avisarYDesmarcar(mensaje);
+            }
+        });
+    }
+
+    private void avisarYDesmarcar(String mensaje) {
+        if (binding == null) return;
+        UiUtils.snack(binding.getRoot(), mensaje);
+        binding.chipCercanos.setChecked(false);
+    }
+
+    /** Ordena por distancia; los que no comparten ubicacion quedan al final. */
+    private List<MatchResult> ordenarPorCercania(List<MatchResult> data) {
+        if (data == null) return null;
+        User yo = UserRepository.get().currentUserValue();
+        if (yo == null || !GeoUtils.esValida(yo.getLat(), yo.getLon())) return data;
+
+        List<MatchResult> copia = new ArrayList<>(data);
+        Collections.sort(copia, (a, b) -> {
+            double da = distancia(yo, a);
+            double db = distancia(yo, b);
+            if (da < 0 && db < 0) return 0;
+            if (da < 0) return 1;
+            if (db < 0) return -1;
+            return Double.compare(da, db);
+        });
+        return copia;
+    }
+
+    private double distancia(User yo, MatchResult m) {
+        if (m == null || m.getUser() == null) return -1;
+        User o = m.getUser();
+        return GeoUtils.distanciaKm(yo.getLat(), yo.getLon(), o.getLat(), o.getLon());
     }
 
     private void renderActiveChips(ExploreFilter filter) {
