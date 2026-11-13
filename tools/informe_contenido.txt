@@ -246,7 +246,7 @@ Conclusión sobre el Oe1. Calcular la compatibilidad con un modelo de reglas pon
 Conclusión sobre el Oe2. Exigir un acuerdo firmado antes de empezar cambia la naturaleza del intercambio: pasa de ser una intención a ser un compromiso con objetivo, número de sesiones y entregable. Todo lo que vino después (cronómetro de sesión, evidencia, pasaporte) se apoya en que ese acuerdo exista.
 Recomendación 1. Hacer una prueba con usuarios reales. Es lo que falta para pasar de «la aplicación funciona» a «la aplicación sirve», y permitiría contrastar los resultados con los antecedentes del apartado 3.1, en especial con las barreras de adopción que señala Petersen (2023).
 Recomendación 2. Medir si el paso del contrato frena el inicio de los intercambios. Es el riesgo principal de la postura adoptada y se puede observar con los registros de la propia aplicación.
-Recomendación 3. Reforzar las reglas de skillPoints. Hoy cualquier usuario autenticado puede modificar su saldo de puntos; conviene mover esa operación a una Cloud Function antes de publicar.
+Recomendación 3. Reforzar las reglas de skillPoints. Las reglas ya impiden poner un saldo arbitrario: el contador del perfil no puede superar el libro de puntos, y cada escritura del libro suma como máximo 25. Sigue siendo una mitigación parcial, porque quien escriba un script puede sumar de a 25; conviene mover el cálculo a una Cloud Function antes de publicar. Además, estas reglas deben publicarse en la consola de Firebase para que tengan efecto.
 Recomendación 4. Sustituir la caché de imágenes incrustadas por Cloud Storage cuando el proyecto pase al plan Blaze.
 <<<REP
 
@@ -297,3 +297,7 @@ IDX>>>Tabla 12. Capturas de las funciones principales
 M:Tabla 12. Capturas de las funciones principales¦Tabla 13. Innovaciones del producto
 M:Tabla 12. Capturas de las funciones principales¦Tabla 14. Licencias de las librerías y recursos usados
 <<<IDX
+
+REP>>>Reforzar las reglas de skillPoints, porque hoy
+Reforzar las reglas de skillPoints: el saldo del perfil ya no puede superar el libro de puntos, pero un script aún puede sumar de a 25 (mitigación parcial).
+<<<REP
