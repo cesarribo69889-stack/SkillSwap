@@ -1,43 +1,58 @@
 # ============================================================================
 #  Completa el Informe de Proyecto Final de SkillSwap.
 #
-#    - Tabla 12 con las pantallas reales y referencia a cada figura
-#    - Figuras 6 en adelante, con capturas tomadas del emulador
-#    - Corrige afirmaciones que ya no son ciertas (ksoap2, numero de pruebas)
-#    - Capitulos VIII (con huecos marcados), IX, X y XI
+#  El texto va en tools/informe_contenido.txt y se lee como UTF-8: si se
+#  escribiera aqui, PowerShell 5.1 leeria el .ps1 en ANSI y se comerian las
+#  tildes.
 #
-#  NO toca el capitulo I (Resumen).
-#  Escribe en un archivo NUEVO; el original queda intacto.
+#  Las figuras se anclan a la Tabla 12, NO a una busqueda de texto: buscar
+#  "7.2. Repositorios" encontraba antes la entrada del indice y las imagenes
+#  acababan en la pagina 3.
+#
+#  No toca el capitulo I (Resumen). Escribe en un archivo NUEVO.
 # ============================================================================
-$ErrorActionPreference = 'Stop'
+$ErrorActionPreference = "Stop"
 
-$origen  = "C:\Users\ricra\Downloads\Informe_Proyecto_Final_SkillSwap_Metodologia (3).docx"
-$destino = "C:\Users\ricra\Downloads\Informe_Proyecto_Final_SkillSwap_COMPLETO.docx"
-$caps    = "C:\Users\ricra\AndroidStudioProjects\PROYECTOAPLICACIONESMOVILES\capturas"
+# El informe ya usa las Figuras 1 a 6; las nuevas empiezan en la 7.
+$PRIMERA_FIGURA = 7
 
-$figuras = @(
-  @{ s='1'; p='Introduccion (P02)';                q='Las tres pantallas de bienvenida, con indicador de posicion y boton Omitir.';            i='00_onboarding.png' },
-  @{ s='1'; p='Inicio de sesion (P04)';            q='Acceso con correo y contrasena, con enlace de recuperacion.';                            i='01_login.png' },
-  @{ s='1'; p='Perfil academico (P21)';            q='Universidad, carrera, ciclo, reputacion, intercambios y SkillPoints.';                   i='60_perfil_top.png' },
-  @{ s='2'; p='Mis habilidades (P22, P23)';        q='Habilidades que se ensenan y que se quieren aprender, con su nivel.';                    i='61_habilidades.png' },
-  @{ s='2'; p='Explorar (P07)';                    q='Estudiantes compatibles ordenados por el porcentaje del SkillMatch.';                    i='50_explorar.png' },
-  @{ s='2'; p='Perfil publico y SkillMatch (P09)'; q='Criterios del match, horarios en comun e indice de confiabilidad.';                      i='53_confiabilidad.png' },
-  @{ s='3'; p='Solicitudes recibidas (P10)';       q='Solicitudes pendientes con las acciones de aceptar y rechazar.';                          i='75_solicitudes.png' },
-  @{ s='3'; p='Chat en tiempo real (P17)';         q='Conversacion entre los dos estudiantes del intercambio.';                                i='63_chat.png' },
-  @{ s='3'; p='Servicios web REST y SOAP (RC2)';   q='Universidades sugeridas por el servicio REST y pais e idioma obtenidos por SOAP.';       i='71_rest_universidades.png' },
-  @{ s='4'; p='Firma de la aceptacion (RC3)';      q='Resumen de lo aceptado, terminos y lienzo de firma con el trazo dibujado.';              i='77_firma_dibujada.png' },
-  @{ s='4'; p='Geolocalizacion (RC4)';             q='Permiso de ubicacion APROXIMADA, solicitado al activar Cercanos.';                        i='73_permiso_ubicacion.png' },
-  @{ s='4'; p='Contrato de aprendizaje';           q='Acuerdo aceptado por ambos; el intercambio pasa a EN PROCESO.';                          i='19_acuerdo_activo.png' },
-  @{ s='4'; p='Sesion en vivo';                    q='Cronometro de la sesion contra la duracion firmada en el contrato.';                     i='48_cronometro.png' },
-  @{ s='4'; p='SkillPoints y nivel (P25)';         q='Puntos acumulados, nivel y barra de avance hacia el siguiente.';                         i='21_skillpoints.png' },
-  @{ s='4'; p='Tabla de lideres';                  q='Ranking por SkillPoints; los empates comparten posicion.';                               i='43_tabla.png' },
-  @{ s='4'; p='Rutas de aprendizaje';              q='Prerrequisitos ordenados y avance tomado del Pasaporte de Habilidades.';                 i='52_rutas_arreglado.png' }
-)
+$origen    = "C:\Users\ricra\Downloads\Informe_Proyecto_Final_SkillSwap_Metodologia (3).docx"
+$destino   = "C:\Users\ricra\Downloads\Informe_Proyecto_Final_SkillSwap_COMPLETO.docx"
+$caps      = "C:\Users\ricra\AndroidStudioProjects\PROYECTOAPLICACIONESMOVILES\capturas"
+$contenido = "C:\Users\ricra\AndroidStudioProjects\PROYECTOAPLICACIONESMOVILES\tools\informe_contenido.txt"
+
+# ------------------------------------------------------- leer el contenido
+$lineas  = Get-Content $contenido -Encoding UTF8
+$figuras = @()
+$reemplazos = @()
+$prefijoActual = $null
+$buffer = @()
+
+$notaFig = ''
+
+foreach ($l in $lineas) {
+  if ($l.StartsWith('#')) { continue }
+  if ($l.StartsWith('NOTAFIG|')) { $notaFig = $l.Substring(8); continue }
+  if ($l.StartsWith('FIG|')) {
+    $p = $l.Substring(4).Split('|')
+    $figuras += @{ img = $p[0]; sprint = $p[1]; pantalla = $p[2]; desc = $p[3] }
+  }
+  elseif ($l.StartsWith('REP>>>')) {
+    $prefijoActual = $l.Substring(6); $buffer = @()
+  }
+  elseif ($l.StartsWith('<<<REP')) {
+    $reemplazos += @{ prefijo = $prefijoActual; parrafos = $buffer }
+    $prefijoActual = $null
+  }
+  elseif ($prefijoActual -ne $null -and $l.Trim() -ne '') {
+    $buffer += $l
+  }
+}
 
 foreach ($f in $figuras) {
-  if (-not (Test-Path (Join-Path $caps $f.i))) { throw "Falta la captura: $($f.i)" }
+  if (-not (Test-Path (Join-Path $caps $f.img))) { throw "Falta la captura: $($f.img)" }
 }
-Write-Output "Capturas verificadas: $($figuras.Count)"
+Write-Output "Figuras: $($figuras.Count)   Reemplazos: $($reemplazos.Count)"
 
 Copy-Item $origen $destino -Force
 
@@ -46,27 +61,33 @@ $word.Visible = $false
 $word.DisplayAlerts = 0
 $doc = $null
 
-# Reemplaza el parrafo que empieza por $prefijo. Varios parrafos se separan
-# con Chr(13), que Word interpreta como marca de parrafo nueva.
+# Escribe en un parrafo SIN tocar su marca de fin. Asignar Range.Text tal cual
+# reemplaza tambien el caracter de parrafo, lo que fusiona parrafos y desplaza
+# todos los indices posteriores.
+function PonerTexto($p, $texto) {
+  $r = $p.Range
+  if (($r.End - $r.Start) -gt 0) { $r.MoveEnd(1, -1) | Out-Null }
+  $r.Text = $texto
+}
+
 function Reemplazar($doc, $prefijo, $nuevos) {
   for ($i = 1; $i -le $doc.Paragraphs.Count; $i++) {
-    $p = $doc.Paragraphs.Item($i)
-    $t = $p.Range.Text
+    $t = $doc.Paragraphs.Item($i).Range.Text
     if ($t -and $t.StartsWith($prefijo)) {
-      $r = $p.Range
-      $r.MoveEnd(1, -1) | Out-Null     # wdCharacter: excluir la marca final
+      $r = $doc.Paragraphs.Item($i).Range
+      $r.MoveEnd(1, -1) | Out-Null
       $r.Text = ($nuevos -join [string][char]13)
       return $true
     }
   }
-  Write-Output "  AVISO: no se encontro '$($prefijo.Substring(0, [Math]::Min(45, $prefijo.Length)))...'"
+  Write-Output ("  AVISO sin encontrar: " + $prefijo.Substring(0, [Math]::Min(40, $prefijo.Length)))
   return $false
 }
 
 try {
   $doc = $word.Documents.Open($destino)
 
-  # ============================================================ 1. TABLA 12
+  # ================================================================ TABLA 12
   $t = $doc.Tables.Item(12)
   if (($t.Cell(1,1).Range.Text -replace "[\r\a]","") -ne 'Sprint') { throw "Tabla 12 inesperada." }
 
@@ -75,245 +96,165 @@ try {
 
   for ($i = 0; $i -lt $figuras.Count; $i++) {
     $fila = $i + 2
-    $t.Cell($fila,1).Range.Text = $figuras[$i].s
-    $t.Cell($fila,2).Range.Text = $figuras[$i].p
-    $t.Cell($fila,3).Range.Text = $figuras[$i].q
-    $t.Cell($fila,4).Range.Text = ("Figura {0}" -f ($i + 6))
+    $t.Cell($fila,1).Range.Text = $figuras[$i].sprint
+    $t.Cell($fila,2).Range.Text = $figuras[$i].pantalla
+    $t.Cell($fila,3).Range.Text = $figuras[$i].desc
+    $t.Cell($fila,4).Range.Text = ("Figura {0}" -f ($i + $PRIMERA_FIGURA))
   }
-  Write-Output "Tabla 12: $($figuras.Count) filas"
+  Write-Output "Tabla 12 actualizada"
 
-  # ============================================== 2. CORRECCIONES PUNTUALES
-  Write-Output "Correcciones:"
+  # ============================================================ REEMPLAZOS
+  foreach ($r in $reemplazos) { Reemplazar $doc $r.prefijo $r.parrafos | Out-Null }
+  Write-Output "Reemplazos aplicados"
 
-  Reemplazar $doc "Sobre SOAP armado con ksoap2-android" @(
-    "Sobre SOAP (Envelope y Body) construido con HttpURLConnection y lectura del XML de respuesta."
-  ) | Out-Null
-
-  Reemplazar $doc "ksoap2-android permite consumir servicios SOAP" @(
-    "El sobre XML se arma con HttpURLConnection, sin librerias externas."
-  ) | Out-Null
-
-  Reemplazar $doc "Se ejecutaron 67 pruebas unitarias" @(
-    ("Se ejecutaron 96 pruebas unitarias con JUnit 4, todas aprobadas y sin fallos, " +
-     "repartidas en cinco clases: CoreLogicTest (29), GamificationEngineTest (11), " +
-     "SkillMatchEngineTest (10), InnovacionesTest (32) y RequisitosCursoTest (14). " +
-     "Las dos ultimas cubren las innovaciones 7 a 12 y los requisitos del curso RC2, " +
-     "RC3 y RC4, que son logica pura y por tanto verificable sin dispositivo. " +
-     "El analisis estatico (gradlew lintDebug) termina con 0 errores.")
-  ) | Out-Null
-
-  Reemplazar $doc "Alcance y limitaciones. Las pruebas no se ejecutaron" @(
-    ("Alcance y limitaciones. Ademas de las pruebas unitarias, la aplicacion se " +
-     "verifico ejecutandola sobre un emulador Android (API 36) contra el proyecto " +
-     "real de Firebase, y las capturas del apartado 7.1.6 proceden de esa ejecucion. " +
-     "Durante esa verificacion se detectaron y corrigieron tres defectos que las " +
-     "pruebas unitarias no podian revelar: la consulta de solicitudes se rechazaba " +
-     "con PERMISSION_DENIED porque filtraba por un campo distinto al que autoriza la " +
-     "regla de seguridad, el reproductor del sonido de entrada no aplicaba sus " +
-     "atributos de audio, y la ruta de aprendizaje marcaba mas de un paso como actual. " +
-     "Queda pendiente publicar en la consola de Firebase las reglas de la coleccion " +
-     "signatures (RC3) y comprobar la geolocalizacion en un dispositivo fisico, porque " +
-     "el emulador no entrega una posicion valida.")
-  ) | Out-Null
-
-  # ====================================================== 3. CAPITULO VIII
-  Reemplazar $doc "Se incluye en la entrega final: captura de la participacion" @(
-    "[PENDIENTE: insertar aqui la captura de la participacion en los debates del aula virtual y de los avances presentados.]"
-  ) | Out-Null
-  Reemplazar $doc "Se incluye en la entrega final: captura de la participación" @(
-    "[PENDIENTE: insertar aqui la captura de la participacion en los debates del aula virtual y de los avances presentados.]"
-  ) | Out-Null
-  Reemplazar $doc "Se incluye en la entrega final: enlace al video" @(
-    "[PENDIENTE: pegar aqui el enlace al video de presentacion, de maximo 10 minutos, alojado en Office 365.]"
-  ) | Out-Null
-  Reemplazar $doc "Se incluye en la entrega final: captura de la carátula" @(
-    "[PENDIENTE: insertar aqui la captura de la caratula de la presentacion usada en la sustentacion.]"
-  ) | Out-Null
-  Reemplazar $doc "Se incluye en la entrega final: captura de la caratula" @(
-    "[PENDIENTE: insertar aqui la captura de la caratula de la presentacion usada en la sustentacion.]"
-  ) | Out-Null
-
-  # ======================================================== 4. CAPITULO IX
-  Reemplazar $doc "Se presentan en la entrega final, un resultado" @(
-    ("Objetivo general. Se construyo y puso en funcionamiento un aplicativo movil " +
-     "nativo que permite el intercambio de habilidades entre estudiantes universitarios " +
-     "sin dinero de por medio. El producto implementa las 48 historias de usuario del " +
-     "Product Backlog, los cuatro requisitos del curso (cache local con SQLite, consumo " +
-     "de servicios REST y SOAP, firma de la aceptacion y geolocalizacion aproximada) y " +
-     "doce innovaciones propias. La verificacion tecnica arroja 96 pruebas unitarias " +
-     "aprobadas sin fallos, 0 errores de analisis estatico y una prueba de extremo a " +
-     "extremo de 37 comprobaciones contra el Firebase real, incluidos seis intentos de " +
-     "acceso indebido que las reglas bloquearon correctamente."),
-
-    ("Resultado del Oe1 (conexion entre estudiantes con habilidades complementarias). " +
-     "El SkillMatch calcula la compatibilidad con un modelo ponderado sobre 100 puntos " +
-     "que combina coincidencia de habilidades (45), nivel de quien ensena (20), " +
-     "disponibilidad (13), modalidad (12) y reputacion (10). No interviene el azar: una " +
-     "prueba unitaria ejecuta el calculo 25 veces y comprueba que el resultado no varia, " +
-     "y si no existe ninguna habilidad complementaria el puntaje es 0 y no se ofrece el " +
-     "intercambio. Entre las dos cuentas reales del equipo el resultado es 99 %, y la " +
-     "pantalla explica en texto cada criterio que sumo. A esto se anadieron dos " +
-     "innovaciones que ayudan a decidir antes de escribir: las franjas horarias en comun " +
-     "y un indice de confiabilidad calculado a partir de intercambios terminados, " +
-     "puntualidad y contratos firmados."),
-
-    ("Resultado del Oe2 (aprendizaje de nuevas habilidades). El intercambio no empieza " +
-     "hasta que ambos estudiantes firman un Contrato de Aprendizaje con objetivo, numero " +
-     "de sesiones, duracion y actividad final; se comprobo que la unica via para que un " +
-     "intercambio pase a EN PROCESO es la aceptacion de ese contrato por las dos partes. " +
-     "Sobre esa base, el Modo Sesion en Vivo cronometra cada sesion contra la duracion " +
-     "acordada y solo permite registrarla al superar el 50 % del tiempo, la Validacion " +
-     "del Aprendizaje exige describir la actividad realizada con una autoevaluacion, y el " +
-     "Pasaporte de Habilidades acumula esa actividad por habilidad y alimenta las Rutas " +
-     "de Aprendizaje."),
-
-    ("Alcance de estos resultados. Lo medido es el funcionamiento del producto, no su " +
-     "efecto en las personas. El proyecto no incluyo un estudio con usuarios reales, por " +
-     "lo que no se puede afirmar que la aplicacion haya influido de forma medible en el " +
-     "aprendizaje de los estudiantes: esa comprobacion requiere un trabajo de campo " +
-     "posterior con una muestra y un instrumento validado.")
-  ) | Out-Null
-
-  Reemplazar $doc "Se redacta en la entrega final, comparando la postura" @(
-    ("Los antecedentes revisados en el apartado 3.1 respaldan las decisiones de diseno " +
-     "del proyecto. Erazo Moreno et al. (2022) encontraron una relacion directa y alta " +
-     "(Rho de Spearman = 0,892) entre el uso de plataformas virtuales educativas y el " +
-     "aprendizaje colaborativo en una universidad publica de Lima; SkillSwap se situa en " +
-     "esa linea, aunque con una diferencia importante: aquel es un estudio correlacional " +
-     "con usuarios y este es un proyecto de desarrollo, de modo que los resultados no " +
-     "son comparables de forma directa."),
-
-    ("Jadhav et al. (2025), con SkillMesh, y Rossi y Valenti (2022) coinciden en que el " +
-     "emparejamiento por compatibilidad de habilidades y disponibilidad horaria favorece " +
-     "el compromiso entre pares. SkillSwap llega a la misma conclusion de diseno y anade " +
-     "un elemento que esos trabajos no describen: el acuerdo explicito previo. En las " +
-     "plataformas revisadas el contacto se produce y el intercambio queda librado a la " +
-     "buena voluntad; aqui el intercambio no arranca sin un contrato firmado por ambos. " +
-     "Esa decision responde al problema de los intercambios que se abandonan a medias, y " +
-     "es tambien la que sostiene el indice de confiabilidad."),
-
-    ("Looi et al. (2021) con MENTOR y Chen et al. (2022) destacan el valor de la " +
-     "horizontalidad y la seguridad psicologica en la tutoria entre pares. De ahi viene " +
-     "que SkillSwap no distinga entre tutor y alumno: todos ensenan y aprenden a la vez, " +
-     "y la reputacion se separa deliberadamente de la confiabilidad, porque ensenar bien " +
-     "y cumplir lo acordado son cosas distintas. Al-Rahmi et al. (2023) justifican " +
-     "incorporar canales de comunicacion dentro de la propia herramienta, de donde sale " +
-     "el chat en tiempo real."),
-
-    ("Sanchez-Prieto et al. (2021) advierten que la adopcion del aprendizaje movil " +
-     "depende de la utilidad percibida y de la facilidad de uso. Esa advertencia explica " +
-     "decisiones concretas del producto: el perfil se completa con ayuda de un servicio " +
-     "REST que sugiere la universidad, los permisos se piden solo cuando se usan y la " +
-     "aplicacion funciona sin conexion gracias a la cache local."),
-
-    ("Limitacion principal de la discusion. Al no haber medicion con usuarios, lo que " +
-     "aqui se compara son decisiones de diseno frente a hallazgos de la literatura, no " +
-     "resultados frente a resultados.")
-  ) | Out-Null
-
-  # ========================================================= 5. CAPITULO X
-  Reemplazar $doc "Se redactan en la entrega final, una por cada objetivo" @(
-    ("Conclusion general. Es viable construir, con herramientas gratuitas y en cuatro " +
-     "sprints de una semana, un aplicativo movil nativo que soporte el intercambio de " +
-     "habilidades entre estudiantes universitarios sin dinero de por medio. El resultado " +
-     "no es un prototipo de pantallas: es una aplicacion que compila, se instala, se " +
-     "conecta a un backend real y cuyas reglas de seguridad bloquean los accesos " +
-     "indebidos que se probaron."),
-
-    ("Conclusion sobre el Oe1. Calcular la compatibilidad con un modelo de reglas " +
-     "ponderadas y explicarlo en pantalla es suficiente para conectar estudiantes con " +
-     "habilidades complementarias, y no hace falta aprendizaje automatico. La ventaja de " +
-     "este enfoque es que el porcentaje se puede justificar criterio por criterio, cosa " +
-     "que un modelo entrenado no permitiria con la misma claridad."),
-
-    ("Conclusion sobre el Oe2. Exigir un acuerdo firmado antes de empezar cambia la " +
-     "naturaleza del intercambio: pasa de ser una intencion a ser un compromiso con " +
-     "objetivo, numero de sesiones y entregable. Todo lo que vino despues (cronometro de " +
-     "sesion, evidencia, pasaporte) se apoya en que ese acuerdo exista."),
-
-    ("Recomendacion 1. Hacer una prueba con usuarios reales. Es lo que falta para pasar " +
-     "de 'la aplicacion funciona' a 'la aplicacion sirve', y permitiria contrastar los " +
-     "resultados con los antecedentes del apartado 3.1."),
-
-    ("Recomendacion 2. Reforzar las reglas de skillPoints. Hoy cualquier usuario " +
-     "autenticado puede modificar su saldo de puntos; conviene moverlo a una Cloud " +
-     "Function antes de publicar."),
-
-    ("Recomendacion 3. Exigir el ciclo academico en el perfil y excluir de los " +
-     "resultados de busqueda los perfiles incompletos, que son los dos hallazgos " +
-     "abiertos de la Tabla 10."),
-
-    ("Recomendacion 4. Sustituir la cache de imagenes incrustadas por Cloud Storage " +
-     "cuando el proyecto pase al plan Blaze, y revisar el limite de 5 MB en la propia " +
-     "aplicacion antes de subir el archivo.")
-  ) | Out-Null
-
-  # ======================================================== 6. CAPITULO XI
-  Reemplazar $doc "Se completa en la entrega final, en formato APA" @(
-    ("Nota para el equipo: las referencias de los antecedentes se listan con los datos " +
-     "disponibles en el apartado 3.1. Hay que completar revista, volumen, numero, " +
-     "paginas y DOI de cada una antes de la entrega final; los campos por completar " +
-     "estan marcados entre corchetes."),
-    "",
-    "Al-Rahmi, W., Yahaya, N. y Alamri, M. (2023). Integrando el aprendizaje movil y las redes sociales para el aprendizaje colaborativo: impacto en el desempeno y la participacion academica de los estudiantes en universidades asiaticas. [Completar: revista, vol.(num.), pp., DOI].",
-    "Alami, A. y Chafiq, N. (2020). Diseno e implementacion de una aplicacion movil basada en P2P para el aprendizaje colaborativo en educacion superior. [Completar: revista, vol.(num.), pp., DOI].",
-    "Carrion, J. y Sulca, R. (2021). Aplicacion movil para estudiantes universitarios [Tesis de licenciatura, Universidad Cesar Vallejo]. [Completar: repositorio y URL].",
-    "Chen, L., Wang, Y. y Zhang, H. (2022). Disenando y evaluando una aplicacion de tutoria entre pares para educacion superior usando la teoria de la actividad historico-cultural. [Completar: revista, vol.(num.), pp., DOI].",
-    "Echeverria Macedo, J. (2024). Gamificacion y habilidades blandas en estudiantes de una universidad privada de Lambayeque. [Completar: tipo de documento, institucion y URL].",
-    "Erazo Moreno, E., Guizado Oscco, F., Huachara Martinez, J., Nina-Cuchillo, E. y Nina-Cuchillo, J. (2022). Plataformas virtuales educativas y aprendizaje colaborativo en estudiantes de una universidad publica de Lima. [Completar: revista, vol.(num.), pp., DOI].",
-    "Google. (s. f.). Firebase Documentation. https://firebase.google.com/docs",
-    "Google. (s. f.). Guide to app architecture. Android Developers. https://developer.android.com/topic/architecture",
-    "Jadhav, S., Ray, A., Awale, P., Patil, S., Latpate, R. y Patil, V. (2025). SkillMesh: plataforma de emparejamiento de estudiantes por compatibilidad de habilidades y disponibilidad. Pimpri Chinchwad College of Engineering and Research. [Completar: revista o congreso, pp., DOI].",
-    "Kruchten, P. (2003). The Rational Unified Process: An Introduction (3.a ed.). Addison-Wesley.",
-    "LearnXChange: Peer-to-Peer Skill Exchange Platform. (2026). [Completar: autores, revista o congreso, pp., DOI].",
-    "Looi, C. K., Cheung, W. S., Chung, T. y Lim, S. (2021). MENTOR: una aplicacion movil de tutoria entre pares universitarios. Nanyang Technological University. [Completar: revista, vol.(num.), pp., DOI].",
-    "Rossi, M. y Valenti, S. (2022). Plataformas digitales entre pares para educacion informal e intercambio de habilidades en campus europeos. [Completar: revista, vol.(num.), pp., DOI].",
-    "Sanchez-Prieto, J. C., Olmos-Miguelanez, S. y Garcia-Penalvo, F. J. (2021). Tecnologias moviles en entornos educativos: evaluando los factores que influyen en la adopcion del aprendizaje movil entre estudiantes universitarios. [Completar: revista, vol.(num.), pp., DOI].",
-    "Schwaber, K. y Sutherland, J. (2020). La Guia de Scrum. Scrum.org. https://scrumguides.org"
-  ) | Out-Null
-
-  # ====================================================== 7. FIGURAS
-  $sel = $word.Selection
-  $sel.HomeKey(6) | Out-Null
-  $f = $sel.Find
-  $f.ClearFormatting()
-  $f.Text = '7.2. Repositorios'
-  $f.Forward = $true
-  $f.Wrap = 0
-  if (-not $f.Execute()) { throw "No se encontro el apartado 7.2." }
-
-  $sel.Collapse(1) | Out-Null
-  $sel.InsertParagraphBefore()
-  $sel.MoveUp(4,1) | Out-Null
+  # =============================================================== FIGURAS
+  # Cada figura ocupa 4 parrafos: rotulo, titulo, imagen y nota.
+  #
+  # Se inserta SIEMPRE justo antes del encabezado "7.2. Repositorios", que se
+  # vuelve a localizar en cada paso. Ese encabezado hace de ancla fija y el
+  # texto nuevo cae siempre en un parrafo recien creado y vacio.
+  #
+  # Los dos intentos anteriores fallaron: escribir con Selection.TypeText
+  # desgarraba el encabezado, y crear los 64 parrafos de golpe con el rango de
+  # la tabla los dejaba descolocados porque ese rango se queda obsoleto.
+  function NuevoParrafoAntesDelAncla($doc) {
+    for ($i = 1; $i -le $doc.Paragraphs.Count; $i++) {
+      # Igualdad EXACTA, no StartsWith: en el indice hay una linea
+      # "7.2. Repositorios32" (con el numero de pagina pegado) que se
+      # encuentra antes que el encabezado real del cuerpo.
+      $txt = ($doc.Paragraphs.Item($i).Range.Text -replace "[\r\a]", "").Trim()
+      if ($txt -eq '7.2. Repositorios') {
+        $doc.Paragraphs.Item($i).Range.InsertParagraphBefore()
+        return $doc.Paragraphs.Item($i)
+      }
+    }
+    throw "No se encontro el ancla '7.2. Repositorios'."
+  }
 
   for ($i = 0; $i -lt $figuras.Count; $i++) {
-    $n = $i + 6
+    $n = $i + $PRIMERA_FIGURA
     $fig = $figuras[$i]
 
-    $sel.Style = $doc.Styles.Item('Normal')
-    $sel.ParagraphFormat.Alignment = 0
-    $sel.Font.Bold = $true
-    $sel.TypeText("Figura $n")
-    $sel.TypeParagraph()
+    # 1. Rotulo "Figura N", en negrita y en su propia linea (estilo APA)
+    $p1 = NuevoParrafoAntesDelAncla $doc
+    PonerTexto $p1 "Figura $n"
+    try { $p1.Style = "Normal" } catch {}
+    $p1.Alignment = 0
+    $p1.SpaceBefore = 14
+    $p1.SpaceAfter = 0
+    $p1.KeepWithNext = $true
+    $p1.Range.Font.Bold = $true
+    $p1.Range.Font.Italic = $false
 
-    $sel.Font.Bold = $false
-    $sel.Font.Italic = $true
-    $sel.TypeText($fig.p + '. ' + $fig.q)
-    $sel.TypeParagraph()
-    $sel.Font.Italic = $false
+    # 2. Titulo descriptivo, en cursiva
+    $p2 = NuevoParrafoAntesDelAncla $doc
+    PonerTexto $p2 $fig.pantalla
+    try { $p2.Style = "Normal" } catch {}
+    $p2.Alignment = 0
+    $p2.SpaceBefore = 0
+    $p2.SpaceAfter = 4
+    $p2.KeepWithNext = $true
+    $p2.Range.Font.Bold = $false
+    $p2.Range.Font.Italic = $true
 
-    $shape = $sel.InlineShapes.AddPicture((Join-Path $caps $fig.i), $false, $true)
+    # 3. La imagen, centrada
+    $p3 = NuevoParrafoAntesDelAncla $doc
+    try { $p3.Style = "Normal" } catch {}
+    $p3.Alignment = 1
+    $p3.SpaceBefore = 0
+    $p3.SpaceAfter = 0
+    $p3.KeepWithNext = $true
+    $shape = $p3.Range.InlineShapes.AddPicture((Join-Path $caps $fig.img), $false, $true)
     $shape.LockAspectRatio = $true
-    $shape.Width = 135
-    $sel.MoveRight(1,1) | Out-Null
-    $sel.TypeParagraph()
+    $shape.Width = 150                          # ~333 pt de alto
 
-    $sel.Font.Italic = $true
-    $sel.TypeText('Nota. Captura tomada de la aplicacion en ejecucion sobre el emulador Android (API 36) conectado al proyecto real de Firebase.')
-    $sel.Font.Italic = $false
-    $sel.TypeParagraph()
+    # 4. Nota al pie
+    $p4 = NuevoParrafoAntesDelAncla $doc
+    PonerTexto $p4 ("Nota. " + $fig.desc + " " + $notaFig)
+    try { $p4.Style = "Normal" } catch {}
+    $p4.Alignment = 0
+    $p4.SpaceBefore = 4
+    $p4.SpaceAfter = 12
+    $p4.KeepWithNext = $false
+    $p4.Range.Font.Bold = $false
+    $p4.Range.Font.Italic = $true
   }
-  Write-Output "Figuras 6 a $($figuras.Count + 5) insertadas"
+  Write-Output "Figuras $PRIMERA_FIGURA a $($figuras.Count + $PRIMERA_FIGURA - 1) insertadas tras la Tabla 12"
+
+  # ============================ INDICE DE FIGURAS: anadir las nuevas
+  # Se insertan tras la ultima figura numerada del original (la 6).
+  for ($i = 1; $i -le $doc.Paragraphs.Count; $i++) {
+    $txt = $doc.Paragraphs.Item($i).Range.Text
+    if ($txt -and $txt.StartsWith('Figura 6. Diagrama de despliegue')) {
+      $nuevas = @()
+      for ($k = 0; $k -lt $figuras.Count; $k++) {
+        # El 0 del final es un marcador: el recalculo posterior solo mira
+        # lineas que acaban en digito, y lo sustituira por la pagina real.
+        $nuevas += ("Figura {0}. {1}0" -f ($k + $PRIMERA_FIGURA), $figuras[$k].pantalla)
+      }
+      $r = $doc.Paragraphs.Item($i).Range
+      $r.InsertParagraphAfter()
+      $r2 = $doc.Paragraphs.Item($i + 1).Range
+      $r2.MoveEnd(1, -1) | Out-Null
+      $r2.Text = ($nuevas -join [string][char]13)
+      Write-Output "Indice de figuras: $($figuras.Count) entradas anadidas"
+      break
+    }
+  }
+
+  # ================= NUMEROS DE PAGINA DE LOS INDICES
+  # No son campos de Word, son texto escrito a mano, asi que al crecer el
+  # documento quedaron desfasados. Se recalculan buscando cada titulo en el
+  # cuerpo y preguntando a Word en que pagina cayo.
+  $doc.Repaginate()
+
+  # Mapa titulo -> pagina, recorriendo el cuerpo de atras hacia delante para
+  # quedarnos con la aparicion real y no con la linea del indice.
+  $paginas = @{}
+  for ($i = $doc.Paragraphs.Count; $i -ge 1; $i--) {
+    $p = $doc.Paragraphs.Item($i)
+    $clave = ($p.Range.Text -replace "[\r\a]", "").Trim()
+    if ($clave.Length -lt 4 -or $clave.Length -gt 120) { continue }
+    if (-not $paginas.ContainsKey($clave)) {
+      $paginas[$clave] = $p.Range.Information(3)   # wdActiveEndPageNumber
+    }
+  }
+
+  $corregidos = 0
+  $sinMapa = 0
+  for ($i = 1; $i -le $doc.Paragraphs.Count; $i++) {
+    $p = $doc.Paragraphs.Item($i)
+    $txt = ($p.Range.Text -replace "[\r\a]", "")
+    # Solo lineas de indice: terminan en digitos y estan en las primeras paginas.
+    # El primer grupo es perezoso; si fuera glotón se comeria la primera cifra
+    # del numero de pagina.
+    if ($txt -notmatch '^(.+?)(\d+)$') { continue }
+    if ($p.Range.Information(3) -gt 5) { continue }
+
+    $titulo = $matches[1].Trim()
+    $pagina = $null
+
+    if ($paginas.ContainsKey($titulo)) {
+      $pagina = $paginas[$titulo]
+    }
+    elseif ($titulo -match '^((?:Tabla|Figura|Anexo)\s+\S+?)\.\s') {
+      # Los rotulos de tablas y figuras estan partidos en dos parrafos:
+      # "Tabla 12" en uno y su titulo en el siguiente. Se busca el rotulo.
+      $rotulo = $matches[1]
+      if ($paginas.ContainsKey($rotulo)) { $pagina = $paginas[$rotulo] }
+    }
+
+    if ($pagina -eq $null) { $sinMapa++; continue }
+
+    $nuevo = $titulo + $pagina
+    if ($nuevo -ne $txt) {
+      $r = $p.Range
+      $r.MoveEnd(1, -1) | Out-Null
+      $r.Text = $nuevo
+      $corregidos++
+    }
+  }
+  Write-Output "Indices: $corregidos numeros de pagina corregidos, $sinMapa sin coincidencia"
 
   $doc.Save()
   Write-Output "GUARDADO: $destino"

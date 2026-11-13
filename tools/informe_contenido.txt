@@ -1,0 +1,99 @@
+# Contenido del informe, en UTF-8.
+# Se guarda aparte porque PowerShell 5.1 lee los .ps1 en ANSI y corrompe las
+# tildes; aqui se lee con Get-Content -Encoding UTF8 y llegan intactas.
+#
+# FIG|archivo|sprint|pantalla|descripcion
+# REP>>>prefijo del parrafo a reemplazar
+# ...parrafos nuevos, uno por linea...
+# <<<REP
+
+NOTAFIG|Captura tomada de la aplicación en ejecución sobre el emulador Android (API 36) conectado al proyecto real de Firebase.
+
+FIG|00_onboarding.png|1|Introducción (P02)|Las tres pantallas de bienvenida, con el indicador de posición y el botón Omitir.
+FIG|01_login.png|1|Inicio de sesión (P04)|Acceso con correo y contraseña, con enlace de recuperación.
+FIG|60_perfil_top.png|1|Perfil académico (P21)|Universidad, carrera, ciclo, reputación, intercambios y SkillPoints.
+FIG|61_habilidades.png|2|Mis habilidades (P22 y P23)|Habilidades que se enseñan y que se quieren aprender, con su nivel.
+FIG|50_explorar.png|2|Explorar (P07)|Estudiantes compatibles ordenados por el porcentaje del SkillMatch.
+FIG|53_confiabilidad.png|2|Perfil público y SkillMatch (P09)|Criterios del match, horarios en común e índice de confiabilidad.
+FIG|75_solicitudes.png|3|Solicitudes recibidas (P10)|Solicitudes pendientes con las acciones de aceptar y rechazar.
+FIG|63_chat.png|3|Chat en tiempo real (P17)|Conversación entre los dos estudiantes del intercambio.
+FIG|71_rest_universidades.png|3|Servicios web REST y SOAP (RC2)|Universidades sugeridas por el servicio REST y país e idioma obtenidos por SOAP.
+FIG|77_firma_dibujada.png|4|Firma de la aceptación (RC3)|Resumen de lo aceptado, términos y lienzo con el trazo dibujado.
+FIG|73_permiso_ubicacion.png|4|Geolocalización (RC4)|Permiso de ubicación aproximada, solicitado al activar «Cercanos».
+FIG|19_acuerdo_activo.png|4|Contrato de aprendizaje|Acuerdo aceptado por ambos; el intercambio pasa a EN PROCESO.
+FIG|48_cronometro.png|4|Modo sesión en vivo|Cronómetro de la sesión contra la duración firmada en el contrato.
+FIG|21_skillpoints.png|4|SkillPoints y nivel (P25)|Puntos acumulados, nivel y barra de avance hacia el siguiente.
+FIG|43_tabla.png|4|Tabla de líderes|Ranking por SkillPoints; los empates comparten posición.
+FIG|52_rutas_arreglado.png|4|Rutas de aprendizaje|Prerrequisitos ordenados y avance tomado del Pasaporte de Habilidades.
+
+REP>>>Sobre SOAP armado con ksoap2-android
+Sobre SOAP (Envelope y Body) construido con HttpURLConnection y lectura del XML de respuesta.
+<<<REP
+
+REP>>>ksoap2-android permite consumir servicios SOAP
+El sobre XML se arma con HttpURLConnection, sin librerías externas.
+<<<REP
+
+REP>>>Se ejecutaron 67 pruebas unitarias
+Se ejecutaron 96 pruebas unitarias con JUnit 4, todas aprobadas y sin fallos, repartidas en cinco clases: CoreLogicTest (29), GamificationEngineTest (11), SkillMatchEngineTest (10), InnovacionesTest (32) y RequisitosCursoTest (14). Las dos últimas cubren las innovaciones 7 a 12 y los requisitos del curso RC2, RC3 y RC4, que son lógica pura y por tanto verificable sin dispositivo. El análisis estático (gradlew lintDebug) termina con 0 errores.
+<<<REP
+
+REP>>>Alcance y limitaciones. Las pruebas no se ejecutaron
+Alcance y limitaciones. Además de las pruebas unitarias, la aplicación se verificó ejecutándola sobre un emulador Android (API 36) conectado al proyecto real de Firebase, y las capturas del apartado 7.1.6 proceden de esa ejecución. Durante esa verificación se detectaron y corrigieron tres defectos que las pruebas unitarias no podían revelar: la consulta de solicitudes se rechazaba con PERMISSION_DENIED porque filtraba por un campo distinto al que autoriza la regla de seguridad, el reproductor del sonido de entrada no aplicaba sus atributos de audio, y la ruta de aprendizaje marcaba más de un paso como actual. Queda pendiente publicar en la consola de Firebase las reglas de la colección signatures (RC3) y comprobar la geolocalización en un dispositivo físico, porque el emulador no entrega una posición válida.
+<<<REP
+
+REP>>>Se incluye en la entrega final: captura de la participación
+[PENDIENTE: insertar aquí la captura de la participación en los debates del aula virtual y de los avances del proyecto presentados.]
+<<<REP
+
+REP>>>Se incluye en la entrega final: enlace al video
+[PENDIENTE: pegar aquí el enlace al video de presentación, de máximo 10 minutos, alojado en Office 365.]
+<<<REP
+
+REP>>>Se incluye en la entrega final: captura de la carátula
+[PENDIENTE: insertar aquí la captura de la carátula de la presentación usada en la sustentación.]
+<<<REP
+
+REP>>>Se presentan en la entrega final, un resultado
+Objetivo general. Se construyó y puso en funcionamiento un aplicativo móvil nativo que permite el intercambio de habilidades entre estudiantes universitarios sin dinero de por medio. El producto implementa las 48 historias de usuario del Product Backlog, los cuatro requisitos del curso (caché local con SQLite, consumo de servicios REST y SOAP, firma de la aceptación y geolocalización aproximada) y doce innovaciones propias. La verificación técnica arroja 96 pruebas unitarias aprobadas sin fallos, 0 errores de análisis estático y una prueba de extremo a extremo de 37 comprobaciones contra el Firebase real, incluidos seis intentos de acceso indebido que las reglas bloquearon correctamente.
+Resultado del Oe1 (conexión entre estudiantes con habilidades complementarias). El SkillMatch calcula la compatibilidad con un modelo ponderado sobre 100 puntos que combina coincidencia de habilidades (45), nivel de quien enseña (20), disponibilidad (13), modalidad (12) y reputación (10). No interviene el azar: una prueba unitaria ejecuta el cálculo 25 veces y comprueba que el resultado no varía, y si no existe ninguna habilidad complementaria el puntaje es 0 y no se ofrece el intercambio. Entre las dos cuentas reales del equipo el resultado es 99 %, y la pantalla explica en texto cada criterio que sumó. A esto se añadieron dos innovaciones que ayudan a decidir antes de escribir: las franjas horarias en común y un índice de confiabilidad calculado a partir de intercambios terminados, puntualidad y contratos firmados.
+Resultado del Oe2 (aprendizaje de nuevas habilidades). El intercambio no empieza hasta que ambos estudiantes firman un Contrato de Aprendizaje con objetivo, número de sesiones, duración y actividad final; se comprobó que la única vía para que un intercambio pase a EN PROCESO es la aceptación de ese contrato por las dos partes. Sobre esa base, el Modo Sesión en Vivo cronometra cada sesión contra la duración acordada y solo permite registrarla al superar el 50 % del tiempo, la Validación del Aprendizaje exige describir la actividad realizada con una autoevaluación, y el Pasaporte de Habilidades acumula esa actividad por habilidad y alimenta las Rutas de Aprendizaje.
+Alcance de estos resultados. Lo medido es el funcionamiento del producto, no su efecto en las personas. El proyecto no incluyó un estudio con usuarios reales, por lo que no se puede afirmar que la aplicación haya influido de forma medible en el aprendizaje de los estudiantes: esa comprobación requiere un trabajo de campo posterior, con una muestra y un instrumento validado.
+<<<REP
+
+REP>>>Se redacta en la entrega final, comparando la postura
+Los antecedentes revisados en el apartado 3.1 respaldan las decisiones de diseño del proyecto. Erazo Moreno et al. (2022) encontraron una relación directa y alta (Rho de Spearman = 0,892) entre el uso de plataformas virtuales educativas y el aprendizaje colaborativo en una universidad pública de Lima; SkillSwap se sitúa en esa línea, aunque con una diferencia importante: aquel es un estudio correlacional con usuarios y este es un proyecto de desarrollo, de modo que los resultados no son comparables de forma directa.
+Jadhav et al. (2025), con SkillMesh, y Rossi y Valenti (2022) coinciden en que el emparejamiento por compatibilidad de habilidades y disponibilidad horaria favorece el compromiso entre pares. SkillSwap llega a la misma conclusión de diseño y añade un elemento que esos trabajos no describen: el acuerdo explícito previo. En las plataformas revisadas el contacto se produce y el intercambio queda librado a la buena voluntad; aquí el intercambio no arranca sin un contrato firmado por ambos. Esa decisión responde al problema de los intercambios que se abandonan a medias, y es también la que sostiene el índice de confiabilidad.
+Looi et al. (2021), con MENTOR, y Chen et al. (2022) destacan el valor de la horizontalidad y la seguridad psicológica en la tutoría entre pares. De ahí viene que SkillSwap no distinga entre tutor y alumno: todos enseñan y aprenden a la vez, y la reputación se separa deliberadamente de la confiabilidad, porque enseñar bien y cumplir lo acordado son cosas distintas. Al-Rahmi et al. (2023) justifican incorporar canales de comunicación dentro de la propia herramienta, de donde sale el chat en tiempo real.
+Sánchez-Prieto et al. (2021) advierten que la adopción del aprendizaje móvil depende de la utilidad percibida y de la facilidad de uso. Esa advertencia explica decisiones concretas del producto: el perfil se completa con ayuda de un servicio REST que sugiere la universidad, los permisos se piden solo cuando se usan y la aplicación funciona sin conexión gracias a la caché local.
+Limitación principal de la discusión. Al no haber medición con usuarios, lo que aquí se compara son decisiones de diseño frente a hallazgos de la literatura, no resultados frente a resultados.
+<<<REP
+
+REP>>>Se redactan en la entrega final, una por cada objetivo
+Conclusión general. Es viable construir, con herramientas gratuitas y en cuatro sprints de una semana, un aplicativo móvil nativo que soporte el intercambio de habilidades entre estudiantes universitarios sin dinero de por medio. El resultado no es un prototipo de pantallas: es una aplicación que compila, se instala, se conecta a un backend real y cuyas reglas de seguridad bloquean los accesos indebidos que se probaron.
+Conclusión sobre el Oe1. Calcular la compatibilidad con un modelo de reglas ponderadas y explicarlo en pantalla es suficiente para conectar estudiantes con habilidades complementarias, y no hace falta aprendizaje automático. La ventaja de este enfoque es que el porcentaje se puede justificar criterio por criterio, cosa que un modelo entrenado no permitiría con la misma claridad.
+Conclusión sobre el Oe2. Exigir un acuerdo firmado antes de empezar cambia la naturaleza del intercambio: pasa de ser una intención a ser un compromiso con objetivo, número de sesiones y entregable. Todo lo que vino después (cronómetro de sesión, evidencia, pasaporte) se apoya en que ese acuerdo exista.
+Recomendación 1. Hacer una prueba con usuarios reales. Es lo que falta para pasar de «la aplicación funciona» a «la aplicación sirve», y permitiría contrastar los resultados con los antecedentes del apartado 3.1.
+Recomendación 2. Reforzar las reglas de skillPoints. Hoy cualquier usuario autenticado puede modificar su saldo de puntos; conviene mover esa operación a una Cloud Function antes de publicar.
+Recomendación 3. Exigir el ciclo académico en el perfil y excluir de los resultados de búsqueda los perfiles incompletos, que son los dos hallazgos abiertos de la Tabla 10.
+Recomendación 4. Sustituir la caché de imágenes incrustadas por Cloud Storage cuando el proyecto pase al plan Blaze, y validar el límite de 5 MB en la propia aplicación antes de subir el archivo.
+<<<REP
+
+REP>>>Se completa en la entrega final, en formato APA
+Nota para el equipo: las referencias de los antecedentes se listan con los datos disponibles en el apartado 3.1. Hay que completar revista, volumen, número, páginas y DOI de cada una antes de la entrega final; los campos por completar están marcados entre corchetes.
+Al-Rahmi, W., Yahaya, N. y Alamri, M. (2023). Integrando el aprendizaje móvil y las redes sociales para el aprendizaje colaborativo: impacto en el desempeño y la participación académica de los estudiantes en universidades asiáticas. [Completar: revista, vol.(núm.), pp., DOI].
+Alami, A. y Chafiq, N. (2020). Diseño e implementación de una aplicación móvil basada en P2P para el aprendizaje colaborativo en educación superior. [Completar: revista, vol.(núm.), pp., DOI].
+Carrión, J. y Sulca, R. (2021). Aplicación móvil para estudiantes universitarios [Tesis de licenciatura, Universidad César Vallejo]. [Completar: repositorio institucional y URL].
+Chen, L., Wang, Y. y Zhang, H. (2022). Diseñando y evaluando una aplicación de tutoría entre pares para educación superior usando la teoría de la actividad histórico-cultural. [Completar: revista, vol.(núm.), pp., DOI].
+Echeverría Macedo, J. (2024). Gamificación y habilidades blandas en estudiantes de una universidad privada de Lambayeque. [Completar: tipo de documento, institución y URL].
+Erazo Moreno, E., Guizado Oscco, F., Huachara Martínez, J., Nina-Cuchillo, E. y Nina-Cuchillo, J. (2022). Plataformas virtuales educativas y aprendizaje colaborativo en estudiantes de una universidad pública de Lima. [Completar: revista, vol.(núm.), pp., DOI].
+Google. (s. f.). Firebase Documentation. https://firebase.google.com/docs
+Google. (s. f.). Guide to app architecture. Android Developers. https://developer.android.com/topic/architecture
+Jadhav, S., Ray, A., Awale, P., Patil, S., Latpate, R. y Patil, V. (2025). SkillMesh: plataforma de emparejamiento de estudiantes por compatibilidad de habilidades y disponibilidad horaria. Pimpri Chinchwad College of Engineering and Research. [Completar: revista o congreso, pp., DOI].
+Kruchten, P. (2003). The Rational Unified Process: An Introduction (3.ª ed.). Addison-Wesley.
+LearnXChange: Peer-to-Peer Skill Exchange Platform. (2026). [Completar: autores, revista o congreso, pp., DOI].
+Looi, C. K., Cheung, W. S., Chung, T. y Lim, S. (2021). MENTOR: una aplicación móvil de tutoría entre pares universitarios. Nanyang Technological University. [Completar: revista, vol.(núm.), pp., DOI].
+Rossi, M. y Valenti, S. (2022). Plataformas digitales entre pares para educación informal e intercambio de habilidades en campus europeos. [Completar: revista, vol.(núm.), pp., DOI].
+Sánchez-Prieto, J. C., Olmos-Migueláñez, S. y García-Peñalvo, F. J. (2021). Tecnologías móviles en entornos educativos: evaluando los factores que influyen en la adopción del aprendizaje móvil entre estudiantes universitarios. [Completar: revista, vol.(núm.), pp., DOI].
+Schwaber, K. y Sutherland, J. (2020). La Guía de Scrum. Scrum.org. https://scrumguides.org
+<<<REP
