@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Marca en cada ImageView la foto que se esta cargando, para no pintar
+         una foto vieja en una fila reciclada. -->
+    <item name="tag_imagen_clave" type="id" />
+</resources>

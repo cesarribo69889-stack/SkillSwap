@@ -124,6 +124,24 @@ public final class ImageUtils {
         return DATA_PREFIX + Base64.encodeToString(out.toByteArray(), Base64.NO_WRAP);
     }
 
+    /** Convierte el data URI guardado en un Bitmap reducido (lado maximo indicado). */
+    public static Bitmap decodeEmbedded(String dataUri, int maxSide) {
+        if (!isEmbedded(dataUri)) return null;
+        int comma = dataUri.indexOf(',');
+        if (comma < 0) return null;
+        try {
+            byte[] bytes = Base64.decode(dataUri.substring(comma + 1), Base64.NO_WRAP);
+            BitmapFactory.Options bounds = new BitmapFactory.Options();
+            bounds.inJustDecodeBounds = true;
+            BitmapFactory.decodeByteArray(bytes, 0, bytes.length, bounds);
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inSampleSize = sampleSize(bounds.outWidth, bounds.outHeight, maxSide);
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.length, options);
+        } catch (Exception | OutOfMemoryError e) {
+            return null;
+        }
+    }
+
     /** Convierte el data URI guardado en un Bitmap para mostrarlo. */
     public static Bitmap decodeEmbedded(String dataUri) {
         if (!isEmbedded(dataUri)) return null;

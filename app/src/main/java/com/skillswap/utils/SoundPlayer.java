@@ -28,6 +28,18 @@ public final class SoundPlayer {
         if (context == null) return;
         if (!PrefsManager.get(context).isIntroSoundEnabled()) return;
         if (isSilent(context)) return;
+        final Context appContext = context.getApplicationContext();
+        // MediaPlayer.create() prepara el audio de forma sincrona: en el hilo
+        // principal retrasaba el arranque. Se hace en un hilo aparte.
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                reproducir(appContext);
+            }
+        }, "intro-sound").start();
+    }
+
+    private static void reproducir(Context context) {
 
         try {
             // Los atributos se pasan a create(): MediaPlayer.create() ya deja el
