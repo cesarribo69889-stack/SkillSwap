@@ -25,6 +25,8 @@ public class BarChartView extends View {
     private final Paint pFondo = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint pTexto = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint pValor = new Paint(Paint.ANTI_ALIAS_FLAG);
+    // Se reutiliza en cada dibujado para no crear objetos dentro de onDraw.
+    private final RectF rect = new RectF();
 
     private int colorBarra = Color.parseColor("#6C4DF6");
     private int colorFondo = Color.parseColor("#E9E3FF");
@@ -94,14 +96,16 @@ public class BarChartView extends View {
             float abajo = alturaValor + areaBarras;
 
             // Carril de fondo: da referencia visual de la escala.
-            canvas.drawRoundRect(new RectF(izq, alturaValor, der, abajo),
+            rect.set(izq, alturaValor, der, abajo);
+            canvas.drawRoundRect(rect,
                     radio, radio, pFondo);
 
             if (valores[i] > 0) {
                 float alto = areaBarras * (valores[i] / (float) max);
                 // Minimo visible para que un valor pequeño no desaparezca.
                 alto = Math.max(alto, dp(6));
-                canvas.drawRoundRect(new RectF(izq, abajo - alto, der, abajo),
+                rect.set(izq, abajo - alto, der, abajo);
+                canvas.drawRoundRect(rect,
                         radio, radio, pBarra);
 
                 canvas.drawText(String.valueOf(valores[i]), centro,

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * INNOVACION 7 - Coincidencia de horarios.
@@ -50,7 +51,7 @@ public final class ScheduleMatcher {
         /** "Martes 19:00 - 20:00" para una sesion de 60 minutos. */
         public String etiqueta(int minutos) {
             int fin = horaInicio + Math.max(1, (int) Math.ceil(minutos / 60.0));
-            return String.format("%s %02d:00 - %02d:00", dia, horaInicio, fin);
+            return String.format(Locale.ROOT, "%s %02d:00 - %02d:00", dia, horaInicio, fin);
         }
 
         @Override
@@ -190,7 +191,7 @@ public final class ScheduleMatcher {
     /** Minusculas y sin tildes, para comparar sin sorpresas. */
     private static String normalizar(String s) {
         if (s == null) return "";
-        String r = s.toLowerCase();
+        String r = s.toLowerCase(Locale.ROOT);
         r = r.replace('á', 'a').replace('é', 'e').replace('í', 'i')
              .replace('ó', 'o').replace('ú', 'u').replace('ñ', 'n');
         return r;

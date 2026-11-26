@@ -134,7 +134,7 @@ public final class WeeklyDigestEngine {
                     int dia = diaDelAno(t);
                     if (!diasVistos.contains(dia)) diasVistos.add(dia);
 
-                    String motivo = p.getReason() == null ? "" : p.getReason().toLowerCase();
+                    String motivo = p.getReason() == null ? "" : p.getReason().toLowerCase(Locale.ROOT);
                     if (motivo.contains("sesion") || motivo.contains("sesión")) {
                         r.sesionesRegistradas++;
                     }

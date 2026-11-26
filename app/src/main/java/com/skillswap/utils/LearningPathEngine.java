@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -199,7 +200,7 @@ public final class LearningPathEngine {
 
     static String normalizar(String s) {
         if (s == null) return "";
-        String r = s.toLowerCase().trim();
+        String r = s.toLowerCase(Locale.ROOT).trim();
         r = r.replace('á', 'a').replace('é', 'e').replace('í', 'i')
              .replace('ó', 'o').replace('ú', 'u').replace('ñ', 'n');
         return r;
