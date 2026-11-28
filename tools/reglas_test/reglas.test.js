@@ -80,6 +80,23 @@ async function caso(nombre, promesa) {
   await caso('tras desbloquear, beto vuelve a escribir', assertSucceeds(setDoc(doc(beto, 'chats/c1/messages/m4'), msg('beto', 'gracias'))));
   await caso('no se puede firmar como otro', assertFails(setDoc(doc(beto, 'chats/c1/messages/m5'), msg('ana', 'suplanto'))));
 
+
+  console.log('Firmas (RC3)');
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    await setDoc(doc(ctx.firestore(), 'exchangeRequests/req1'), {
+      participants: ['ana', 'beto'], fromUserId: 'ana', toUserId: 'beto', status: 'PENDIENTE' });
+  });
+  const hash64 = 'a'.repeat(64);
+  const firma = (uid, rid) => ({ id: rid + '__' + uid, requestId: rid, userId: uid,
+    textHash: hash64, signatureImage: 'data:image/png;base64,AAAA', signedAt: serverTimestamp() });
+  await caso('beto firma la solicitud en la que participa', assertSucceeds(setDoc(doc(beto, 'signatures/req1__beto'), firma('beto', 'req1'))));
+  await caso('no se puede firmar a nombre de otro', assertFails(setDoc(doc(luis, 'signatures/req1__beto2'), firma('beto', 'req1'))));
+  await caso('el id debe derivar de mi uid', assertFails(setDoc(doc(ana, 'signatures/otro_id'), firma('ana', 'req1'))));
+  await caso('la huella debe tener 64 caracteres', assertFails(setDoc(doc(ana, 'signatures/req1__ana'), { ...firma('ana', 'req1'), textHash: 'corta' })));
+  await caso('el companero lee la firma', assertSucceeds(getDoc(doc(ana, 'signatures/req1__beto'))));
+  await caso('un tercero NO lee la firma', assertFails(getDoc(doc(luis, 'signatures/req1__beto'))));
+  await caso('una firma emitida no se edita', assertFails(updateDoc(doc(beto, 'signatures/req1__beto'), { textHash: 'b'.repeat(64) })));
+  await caso('una firma emitida no se borra', assertFails(deleteDoc(doc(beto, 'signatures/req1__beto'))));
   console.log('Puntos');
   await caso('ana sube su saldo hasta el libro (50)', assertSucceeds(updateDoc(doc(ana, 'users/ana'), { skillPoints: 50 })));
   await caso('ana NO se pone 99999 puntos', assertFails(updateDoc(doc(ana, 'users/ana'), { skillPoints: 99999 })));
